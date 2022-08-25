@@ -1,0 +1,20 @@
+---
+spring:     
+   application:
+      name: dmp-mem-service  
+
+---
+spring:  
+   profiles: dev
+   config:
+      label: master
+   cloud:
+      config:
+         uri: http://192.168.0.23:9098
+
+---
+spring:  
+   profiles: prod
+   cloud:
+      config:
+         uri: todo

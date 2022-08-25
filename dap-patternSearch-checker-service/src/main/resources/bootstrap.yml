@@ -1,0 +1,32 @@
+---
+spring:  
+  application:
+    name: dap-patternsearch-checker-service
+
+logging:
+  level:
+    ROOT: INFO
+    org.springframework.cloud.config: ${LOG:DEBUG}      
+#---   
+#spring:
+#  profiles: cea
+#  cloud:
+#    config:
+#      uri: http://192.168.1.201:9498
+#
+#---   
+#spring:
+#  profiles: dev
+#  cloud:
+#    config:
+#      uri: http://192.168.0.203:9398
+#      #uri: http://192.168.0.26:9498
+#            
+#---   
+#spring:
+#  profiles: prod
+#  cloud:
+#    config:
+#      uri: http://152.228.167.133:9498
+  
+

@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: fr.cea.bigpi.fhe.repository.test.SampleRepositoryTest
+-------------------------------------------------------------------------------
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 14.814 sec - in fr.cea.bigpi.fhe.repository.test.SampleRepositoryTest

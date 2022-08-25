@@ -1,0 +1,60 @@
+eureka:
+   client:
+      enabled: false
+
+#logging:
+#  level: INFO
+  
+security:
+   activation:
+      status: false      
+   # basic auth credentials
+   user:
+      name: bigpi
+      password: password
+
+server:
+   port: ${PORT:0}     
+     
+#use for admin client
+management:
+   security:
+      enabled: false
+      
+spring:
+   application:
+      name: dmp-fhe-patternsearch-service
+  
+#  datasource:
+#    url: jdbc:postgresql://localhost:5432/cingulatadb
+#    username: postgres
+#    password: 123
+   datasource:
+      url: jdbc:postgresql://10.8.34.73:5432/PatternSearch
+      username: postgres
+      password: bigpi!123!    
+    
+   jpa:
+      hibernate:
+         ddl-auto: update
+      show-sql: true
+      properties:
+         hibernate:
+            format_sql: true
+            hibernate_dialect: org.hibernate.dialect.PostgreSQLDialect
+      
+logging.level.org.hibernate.SQL: DEBUG
+logging.level.org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+      
+application:
+   seal:
+     #sealDir: '/home/hgnguyen/Desktop/seal/'
+     sealDir: '/opt/fhe/datalake/seal'
+     dataDir: ${application.seal.sealDir} + 'data/'
+     resultDir: ${application.seal.sealDir} + 'result/'
+     keyDir: ${application.seal.sealDir} + 'keys/'
+     uploadDir: ${application.seal.sealDir} + 'upload/'
+     sample: 40
+     filename: l
+      
+         

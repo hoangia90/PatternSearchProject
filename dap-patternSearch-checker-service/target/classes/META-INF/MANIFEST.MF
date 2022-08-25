@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Built-By: hgnguyen
+Build-Jdk: 15.0.2
+Implementation-Title: dap-patternsearch-analysis-service
+Implementation-Version: 1.0-SNAPSHOT
+Implementation-Vendor-Id: fr.cea.fhe.dap
+Implementation-Vendor: Pivotal Software, Inc.
+Implementation-URL: http://projects.spring.io/spring-boot/dap-patternsea
+ rch-analysis-service/
+Created-By: Maven Integration for Eclipse
+

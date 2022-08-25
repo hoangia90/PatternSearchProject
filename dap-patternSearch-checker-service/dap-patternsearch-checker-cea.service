@@ -1,0 +1,19 @@
+[Unit]
+Description=BIGPI FHE ANALYSIS PATTERN SEARCH microservice
+
+[Service]
+User=bigpi
+# The configuration file application.properties should be here:
+#change this to your workspace
+WorkingDirectory=/opt/deployment/dap/fhe
+#path to executable. 
+#executable is a bash script which calls jar file
+ExecStart=/usr/bin/java -Xms512m -Xmx2048m -Dspring.profiles.active=cea -Djava.net.preferIPv4Stack=true -jar /opt/deployment/dap/fhe/dap-patternsearch-analysis-service.jar
+SuccessExitStatus=143
+TimeoutStopSec=10
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+
