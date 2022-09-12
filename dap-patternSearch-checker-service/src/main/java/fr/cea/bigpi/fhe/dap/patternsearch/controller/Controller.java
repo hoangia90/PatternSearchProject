@@ -22,39 +22,39 @@ public interface Controller {
 
 	final Logger logger = LoggerFactory.getLogger(Controller.class.getName());
 
-	@ApiOperation(value = "Upload Encrypted Driving License Number File (.ct)", notes = "This method uploads a driving license number file and return the requestID number", nickname = "uploadDrivingLicenseFile", response = String.class, authorizations = {}, tags = {
-			"Driving License For Client", })
+	@ApiOperation(value = "Upload Encrypted File (.ct)", notes = "This method uploads an encrypted file and return the requestID number", nickname = "uploadEncryptedFile", response = String.class, authorizations = {}, tags = {
+			"Data For Client", })
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Server response", response = String.class),
 			@ApiResponse(code = 400, message = "Bad request", response = String.class),
 			@ApiResponse(code = 401, message = "Unauthorized", response = String.class),
 			@ApiResponse(code = 404, message = "Not found", response = String.class),
 			@ApiResponse(code = 500, message = "Error for HTTPS call trustAnchors", response = String.class) })
-	@PostMapping("/crud-data-master/check/drivingLicense/01-uploadFile")
-	public @ResponseBody ResponseEntity<String> uploadDrivingLicenseFile(
+	@PostMapping("/crud-data-master/check/01-uploadEncryptedFile")
+	public @ResponseBody ResponseEntity<String> uploadEncryptedFile(
 			@ApiParam(name = "file", value = "", example = "", required = true) @RequestParam("file") MultipartFile file,
 			@ApiParam(name = "partnerID", value = "", example = "", required = true) @RequestParam("partnerID") String partnerID);
 
-	@ApiOperation(value = "Check If An Uploaded Encrypted Driving License Number Is In Database", notes = "This method checks if an uploaded encrypted driving license number exists in database and returns an encrypted .ct file result. The file result is decrypted with 04-decryptCheckedResult. Note that: the requestID number is used in this method generated from the 01-uploadFile", nickname = "drivingLicenseCheckByFile", response = ResponseEntity.class, authorizations = {}, tags = {
-			"Driving License For Client", })
+	@ApiOperation(value = "Check If An Uploaded Encrypted File Information Is In Database", notes = "This method checks if an uploaded encrypted information exists in database and returns an encrypted .ct file result. The file result is decrypted with 04-decryptCheckedResult. Note that: the requestID number is used in this method generated from the 01-uploadFile", nickname = "checkWithEncryptedFile", response = ResponseEntity.class, authorizations = {}, tags = {
+			"Data For Client", })
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Server response", response = String.class),
 			@ApiResponse(code = 400, message = "Bad request", response = String.class),
 			@ApiResponse(code = 401, message = "Unauthorized", response = String.class),
 			@ApiResponse(code = 404, message = "Not found", response = String.class),
 			@ApiResponse(code = 500, message = "Error for HTTPS call trustAnchors", response = String.class) })
-	@PostMapping("/crud-data-master/check/drivingLicense/02-checkByFile")
-	public @ResponseBody ResponseEntity<byte[]> drivingLicenseCheckByFile(
+	@PostMapping("/crud-data-master/check/02-checkWithEncryptedFile")
+	public @ResponseBody ResponseEntity<byte[]> checkWithEncryptedFile(
 			@ApiParam(name = "partnerID", value = "", example = "", required = true) @RequestParam("partnerID") String partnerID,
 			@ApiParam(name = "requestID", value = "", example = "", required = true) @RequestParam("requestID") String requestID);
 
-	@ApiOperation(value = "Download Encrpted Driving License Number File", notes = "This method download an encrpted driving license number file", nickname = "downloadFile", response = ResponseEntity.class, authorizations = {}, tags = {
-			"Driving License For Client", })
+	@ApiOperation(value = "Download Encrpted File", notes = "This method download an encrpted file", nickname = "downloadEncrptedFile", response = ResponseEntity.class, authorizations = {}, tags = {
+			"Data For Client", })
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Server response"),
 			@ApiResponse(code = 400, message = "Bad request", response = String.class),
 			@ApiResponse(code = 401, message = "Unauthorized", response = String.class),
 			@ApiResponse(code = 404, message = "Not found", response = String.class),
 			@ApiResponse(code = 500, message = "Error for HTTPS call trustAnchors", response = String.class) })
-	@PostMapping("/crud-data-master/check/drivingLicense/downloadFile")
-	public ResponseEntity<byte[]> downloadDrivingLicenseFile(
+	@PostMapping("/crud-data-master/check/downloadEncryptedFile")
+	public ResponseEntity<byte[]> downloadEncryptedFile(
 			@ApiParam(name = "Id", value = "", example = "", required = true) @RequestParam(name = "Id") Integer Id,
 			@ApiParam(name = "partnerID", value = "", example = "", required = true) @RequestParam("partnerID") String partnerID);
 

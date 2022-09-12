@@ -66,7 +66,7 @@ public class Application {
 	}
 	
 	private final String filterPatern = "/openapi/.*";
-	private final String basePackage = "fr.cea.bigpi.fhe.dap.patternsearch.controller"; 
+	private final String basePackage = "fr.cea.bigpi.fhe.dmp.patternsearch.controller"; 
     /**
 	 * the metadata are information visualized in the /basepath/swagger-ui.html
 	 * interface, only for documentation

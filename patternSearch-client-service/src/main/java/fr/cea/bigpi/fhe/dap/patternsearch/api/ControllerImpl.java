@@ -109,7 +109,7 @@ public class ControllerImpl implements Controller {
 			headers.set("Accept", "text/plain");
 			RestTemplate restTemplate = new RestTemplate();
 			ResponseEntity<String> res1 = restTemplate.postForEntity(
-					fheServerAnalysis + "/openapi/v1/crud-data-master/check/drivingLicense/01-uploadFile",
+					fheServerAnalysis + "/openapi/v1/crud-data-master/check/01-uploadEncryptedFile",
 					new HttpEntity<MultiValueMap<String, Object>>(parameters, headers), String.class);
 			seal.deleteDir(path.toString());
 			// check
@@ -170,7 +170,7 @@ public class ControllerImpl implements Controller {
 				RestTemplate restTemplate = new RestTemplate();
 
 				ResponseEntity<String> result = restTemplate.postForEntity(
-						fheServerAnalysis + "/openapi/v1/crud-data-master/check/drivingLicense/01-uploadFile",
+						fheServerAnalysis + "/openapi/v1/crud-data-master/check/01-uploadEncryptedFile",
 						new HttpEntity<MultiValueMap<String, Object>>(parameters, headers), String.class);
 				seal.deleteDir(filePath);
 				return result;
@@ -195,7 +195,7 @@ public class ControllerImpl implements Controller {
 			headers.set("Accept", "text/plain");
 			RestTemplate restTemplate = new RestTemplate();
 			byte[] result = restTemplate.postForObject(
-					fheServerAnalysis + "/openapi/v1/crud-data-master/check/drivingLicense/02-checkByFile",
+					fheServerAnalysis + "/openapi/v1/crud-data-master/check/02-checkWithEncryptedFile",
 					new HttpEntity<MultiValueMap<String, Object>>(parameters, headers), byte[].class);
 
 			return new ResponseEntity<byte[]>(result, HttpStatus.OK);
@@ -250,7 +250,7 @@ public class ControllerImpl implements Controller {
 			headers.set("Accept", "*/*");
 			RestTemplate restTemplate = new RestTemplate();
 			ResponseEntity<byte[]> result = restTemplate.exchange(
-					fheServerAnalysis + "/openapi/v1/crud-data-master/check/drivingLicense/downloadFile",
+					fheServerAnalysis + "/openapi/v1/crud-data-master/check/downloadEncryptedFile",
 					HttpMethod.POST, new HttpEntity<MultiValueMap<String, Object>>(parameters, headers), byte[].class);
 			return result;
 		} catch (Exception e) {
@@ -268,7 +268,7 @@ public class ControllerImpl implements Controller {
 			headers.set("Accept", "*/*");
 			RestTemplate restTemplate = new RestTemplate();
 			ResponseEntity<List<Data>> allDrivingLicenses = restTemplate.exchange(
-					fheServerData + "/openapi/v1/crud-data-master/data/all/drivingLicenses?partnerID=" + partnerID,
+					fheServerData + "/openapi/v1/crud-data-master/data/all?partnerID=" + partnerID,
 					HttpMethod.GET, new HttpEntity<MultiValueMap<String, Object>>(parameters, headers),
 					new ParameterizedTypeReference<List<Data>>() {
 					});
@@ -318,7 +318,7 @@ public class ControllerImpl implements Controller {
 //			headers.set("Accept", "application/json");
 			RestTemplate restTemplate = new RestTemplate();
 			ResponseEntity<Description> result = restTemplate.exchange(
-					fheServerData + "/openapi/v1/crud-data-master/data/drivingLicense", HttpMethod.POST,
+					fheServerData + "/openapi/v1/crud-data-master/data", HttpMethod.POST,
 					new HttpEntity<MultiValueMap<String, Object>>(parameters, headers), Description.class);
 			seal.deleteDir(seal.getUploadDir() + filename + ".ct");
 			return result;
@@ -378,7 +378,7 @@ public class ControllerImpl implements Controller {
 			headers.set("Accept", "application/xml, application/json");
 			RestTemplate restTemplate = new RestTemplate();
 			ResponseEntity<Description> result = restTemplate.exchange(
-					fheServerData + "/openapi/v1/crud-data-master/data/drivingLicense", HttpMethod.PUT,
+					fheServerData + "/openapi/v1/crud-data-master/data", HttpMethod.PUT,
 					new HttpEntity<MultiValueMap<String, Object>>(parameters, headers), Description.class);
 			seal.deleteDir(seal.getUploadDir() + filename + ".ct");
 			return result;
@@ -398,7 +398,7 @@ public class ControllerImpl implements Controller {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("Accept", "*/*");
 			RestTemplate restTemplate = new RestTemplate();
-			return restTemplate.exchange(fheServerData + "/openapi/v1/crud-data-master/data/drivingLicense",
+			return restTemplate.exchange(fheServerData + "/openapi/v1/crud-data-master/data",
 					HttpMethod.DELETE, new HttpEntity<MultiValueMap<String, Object>>(parameters, headers),
 					Description.class);
 		} catch (Exception e) {

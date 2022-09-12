@@ -35,7 +35,7 @@ public class ControllerImpl implements Controller {
 	private FHEPatternSearchService fhePatternSearchService;
 
 	@Autowired
-	DataService drivingLicenseService;
+	DataService dataService;
 
 	@Autowired
 	FilesStorageService storageService;
@@ -59,11 +59,11 @@ public class ControllerImpl implements Controller {
 	public ResponseEntity<List<Data>> getAllData(
 			@ApiParam(name = "partnerID", value = "", example = "", required = true) @RequestParam("partnerID") String partnerID) {
 		try {
-			List<Data> allData = drivingLicenseService.getAllData();
+			List<Data> allData = dataService.getAllData();
 			ArrayList<Data> data = new ArrayList<Data>();
-			for (Data drivingLicense : allData) {
-				if (drivingLicense.getPartnerId().equals(partnerID)) {
-					data.add(drivingLicense);
+			for (Data element : allData) {
+				if (element.getPartnerId().equals(partnerID)) {
+					data.add(element);
 				}
 			}
 			return new ResponseEntity<List<Data>>(data, HttpStatus.OK);
@@ -76,13 +76,13 @@ public class ControllerImpl implements Controller {
 	@Override
 	public ResponseEntity<List<Data>> getAllDecryptedData() {
 		try {
-			List<Data> drivinglicenses = drivingLicenseService.getAllData();
-			for (Data drivinglicense : drivinglicenses) {
+			List<Data> data = dataService.getAllData();
+			for (Data drivinglicense : data) {
 //			drivinglicense.setDataNo(seal.decrypt(drivinglicense.getDataNo()));
 				drivinglicense.setDataNo(fhePatternSearchService.decrypt(drivinglicense.getDataNo(),
 						drivinglicense.getDataId().toString()));
 			}
-			return new ResponseEntity<List<Data>>(drivinglicenses, HttpStatus.OK);
+			return new ResponseEntity<List<Data>>(data, HttpStatus.OK);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -91,7 +91,7 @@ public class ControllerImpl implements Controller {
 	}
 
 	@Override
-	public ResponseEntity<String> uploadDataFile(
+	public ResponseEntity<String> uploadEncryptedFile(
 			@ApiParam(name = "file", value = "", example = "", required = true) @RequestParam("file") MultipartFile file,
 			@ApiParam(name = "partnerID", value = "", example = "", required = true) @RequestParam("partnerID") String partnerID) {
 		String message = "";
@@ -112,14 +112,14 @@ public class ControllerImpl implements Controller {
 	}
 
 	@Override
-	public ResponseEntity<byte[]> drivingLicenseCheckByFile(
+	public ResponseEntity<byte[]> checkWithEncryptedFile(
 			@ApiParam(name = "partnerID", value = "", example = "", required = true) @RequestParam("partnerID") String partnerID,
 			@ApiParam(name = "requestID", value = "", example = "", required = true) @RequestParam("requestID") String requestID) {
 		try {
 			// clean result
 			fhePatternSearchService.deleteDir(fhePatternSearchService.getResultDir() + "requestID" + ".ct");
 			//
-			List<Data> allData = drivingLicenseService.getAllData();
+			List<Data> allData = dataService.getAllData();
 			ArrayList<String> data = new ArrayList<String>();
 			for (Data drivingLicense : allData) {
 				if (drivingLicense.getPartnerId().equals(partnerID)) {
@@ -161,13 +161,13 @@ public class ControllerImpl implements Controller {
 			drivingLicense.setPartnerId(partnerID);
 			drivingLicense.setContractId(contractID);
 			drivingLicense.setDataType(dataType);
-			drivingLicense = drivingLicenseService.saveOrUpdate(drivingLicense);
+			drivingLicense = dataService.saveOrUpdate(drivingLicense);
 			int id = drivingLicense.getDataId();
 			String fileDirStr = fhePatternSearchService
 					.createLicenseDir(partnerID + File.separator + contractID + File.separator + String.valueOf(id));
 
 			drivingLicense.setDataNo(fileDirStr);
-			drivingLicense = drivingLicenseService.saveOrUpdate(drivingLicense);
+			drivingLicense = dataService.saveOrUpdate(drivingLicense);
 
 			Path fileDir = Paths.get(fileDirStr);
 
@@ -185,14 +185,14 @@ public class ControllerImpl implements Controller {
 	@Override
 	public ResponseEntity<Description> updateData(
 			@ApiParam(name = "file", value = "", example = "", required = true) @RequestParam(name = "file") MultipartFile file,
-			@ApiParam(name = "Id", value = "", example = "", required = true) @RequestParam(name = "ID") Integer Id,
+			@ApiParam(name = "Id", value = "", example = "", required = true) @RequestParam(name = "Id") Integer Id,
 			@ApiParam(name = "partnerID", value = "", example = "12345", required = true) @RequestParam(name = "partnerID") String partnerID,
 			@ApiParam(name = "contractID", value = "Contract ID", example = "12345", required = true) @RequestParam(name = "contractID", required = false) String contractID,
 			@ApiParam(name = "dataType", value = "Data Type", example = "12345") @RequestParam(name = "dataType", required = true) Integer dataType,
 			@ApiParam(name = "status", value = "0,1,2, etc.", example = "", required = false) @RequestParam(name = "status", required = false) Integer status,
 			@ApiParam(name = "description", value = "good, banned, etc.", example = "banned", required = false) @RequestParam(name = "description", required = false) String description) {
 		try {
-			Data oldData = drivingLicenseService.getDataById(Id);
+			Data oldData = dataService.getDataById(Id);
 			if (oldData != null) {
 
 				if (partnerID.equals(oldData.getPartnerId()) && contractID.equals(oldData.getContractId())) {
@@ -215,7 +215,7 @@ public class ControllerImpl implements Controller {
 
 					}
 					oldData.setUpdatedDate(tools.dateTimeToStringWithTime(LocalDateTime.now()));
-					drivingLicenseService.saveOrUpdate(oldData);
+					dataService.saveOrUpdate(oldData);
 				}
 //				return new ResponseEntity<Data>(oldData, HttpStatus.OK);
 				return new ResponseEntity<Description>(new Description().value("" + oldData.getDataId()),
@@ -235,10 +235,10 @@ public class ControllerImpl implements Controller {
 			@ApiParam(name = "id", value = "", example = "", required = true) @RequestParam(value = "id") Integer id,
 			@ApiParam(name = "partnerId", value = "", example = "", required = true) @RequestParam(value = "partnerId") String partnerId) {
 		try {
-			Data drivinglicense = drivingLicenseService.getDataById(id);
+			Data drivinglicense = dataService.getDataById(id);
 			if (drivinglicense.getPartnerId().equals(partnerId)) {
 				fhePatternSearchService.deleteDir(drivinglicense.getDataNo());
-				drivingLicenseService.delete(id);
+				dataService.delete(id);
 //				return new ResponseEntity<String>(drivinglicense.getDataNo(), HttpStatus.OK);
 				return new ResponseEntity<Description>(new Description().value("Deleted sucessfully !"), HttpStatus.OK);
 			}

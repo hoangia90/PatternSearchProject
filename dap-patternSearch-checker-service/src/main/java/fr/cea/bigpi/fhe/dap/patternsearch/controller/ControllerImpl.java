@@ -38,7 +38,7 @@ public class ControllerImpl implements Controller {
 	static final Logger logger = LoggerFactory.getLogger(ControllerImpl.class);
 
 	@Override
-	public ResponseEntity<String> uploadDrivingLicenseFile(
+	public ResponseEntity<String> uploadEncryptedFile(
 			@ApiParam(name = "file", value = "", example = "", required = true) @RequestParam("file") MultipartFile file,
 			@ApiParam(name = "partnerID", value = "", example = "", required = true) @RequestParam("partnerID") String partnerID) {
 		String message = "";
@@ -59,28 +59,7 @@ public class ControllerImpl implements Controller {
 	}
 
 	@Override
-	public ResponseEntity<byte[]> downloadDrivingLicenseFile(
-			@ApiParam(name = "Id", value = "", example = "", required = true) @RequestParam(name = "Id") Integer Id,
-			@ApiParam(name = "partnerID", value = "", example = "", required = true) @RequestParam("partnerID") String partnerID) {
-		try {
-			List<Data> allDrivingLicenses = dataService.getAllDatas();
-			for (Data drivingLicense : allDrivingLicenses) {
-				if (drivingLicense.getPartnerId().equals(partnerID) && drivingLicense.getDataId().equals(Id)) {
-					String fileName = Id + ".ct";
-					String encryptedFilePath = drivingLicense.getDataNo() + fileName;
-					Path path = Paths.get(encryptedFilePath);
-					byte[] returnData = Files.readAllBytes(path);
-					return new ResponseEntity<byte[]>(returnData, HttpStatus.OK);
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-	}
-
-	@Override
-	public ResponseEntity<byte[]> drivingLicenseCheckByFile(
+	public ResponseEntity<byte[]> checkWithEncryptedFile(
 			@ApiParam(name = "partnerID", value = "", example = "", required = true) @RequestParam("partnerID") String partnerID,
 			@ApiParam(name = "requestID", value = "", example = "", required = true) @RequestParam("requestID") String requestID) {
 		try {
@@ -108,6 +87,27 @@ public class ControllerImpl implements Controller {
 				return new ResponseEntity<byte[]>(returnData, HttpStatus.OK);
 			} else {
 				throw new Exception("Number of files must be smaller than 102");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+
+	@Override
+	public ResponseEntity<byte[]> downloadEncryptedFile(
+			@ApiParam(name = "Id", value = "", example = "", required = true) @RequestParam(name = "Id") Integer Id,
+			@ApiParam(name = "partnerID", value = "", example = "", required = true) @RequestParam("partnerID") String partnerID) {
+		try {
+			List<Data> allDrivingLicenses = dataService.getAllDatas();
+			for (Data drivingLicense : allDrivingLicenses) {
+				if (drivingLicense.getPartnerId().equals(partnerID) && drivingLicense.getDataId().equals(Id)) {
+					String fileName = Id + ".ct";
+					String encryptedFilePath = drivingLicense.getDataNo() + fileName;
+					Path path = Paths.get(encryptedFilePath);
+					byte[] returnData = Files.readAllBytes(path);
+					return new ResponseEntity<byte[]>(returnData, HttpStatus.OK);
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
