@@ -6,7 +6,7 @@ public class DataUpdate implements java.io.Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	private Integer data_id;
-	private String data;
+	private String content;
 	private Integer status;
 	private String description;
 	private String partner_id;
@@ -20,12 +20,12 @@ public class DataUpdate implements java.io.Serializable {
 		this.data_id = data_id;
 	}
 
-	public String getData() {
-		return data;
+	public String getContent() {
+		return content;
 	}
 
-	public void setData(String data) {
-		this.data = data;
+	public void setContent(String content) {
+		this.content = content;
 	}
 
 	public Integer getStatus() {

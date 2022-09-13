@@ -34,6 +34,37 @@ public interface Controller {
 
 	final Logger logger = LoggerFactory.getLogger(Controller.class.getName());
 
+	// Used for DeepLab - Begin
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Server response", response = String.class),
+			@ApiResponse(code = 400, message = "Bad request", response = String.class),
+			@ApiResponse(code = 401, message = "Unauthorized", response = String.class),
+			@ApiResponse(code = 404, message = "Not found", response = String.class),
+			@ApiResponse(code = 500, message = "Error for HTTPS call trustAnchors", response = String.class) })
+	@PostMapping("/client/hashData")
+	@ApiOperation(value = "Create Data", notes = "This method encrypts a given information into an encrypted file and then stores it into the database", tags = {
+			"DeepLab - Analysis", })
+	public ResponseEntity<Description> createHashData(
+			@ApiParam(name = "content", value = "Any Character", example = "") @RequestParam(name = "content", required = true) String content,
+			@ApiParam(name = "partnerID", value = "", example = "") @RequestParam(name = "partnerID", required = true) String partnerID,
+			@ApiParam(name = "contractID", value = "", example = "") @RequestParam(name = "contractID", required = true) String contractID,
+			@ApiParam(name = "dataType", value = "Data Type", example = "12345") Integer dataType,
+			@ApiParam(name = "status", value = "0,1,2, etc.", example = "") @RequestParam(name = "status", required = false) Integer status,
+			@ApiParam(name = "description", value = "good, banned, etc.", example = "good") @RequestParam(name = "description", required = false) String description);
+	
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Server response", response = String.class),
+			@ApiResponse(code = 400, message = "Bad request", response = String.class),
+			@ApiResponse(code = 401, message = "Unauthorized", response = String.class),
+			@ApiResponse(code = 404, message = "Not found", response = String.class),
+			@ApiResponse(code = 500, message = "Error for HTTPS call trustAnchors", response = String.class) })
+	@PostMapping("/client/generic/05-checkHashContent-Auto")
+	@ApiOperation(value = "Check Content In Database", notes = "This method checks if an uploaded encrypted file's information is stored in database and then returns an result", tags = {
+			"DeepLab - Analysis", })
+	public ResponseEntity<String> checkHashContentAuto(
+			@ApiParam(name = "content", value = "Any Character", example = "", required = true) @RequestParam("content") String content,
+			@ApiParam(name = "partnerID", value = "", example = "", required = true) @RequestParam("partnerID") String partnerID);
+	
+	// Used for DeepLab - End
+
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Server response", response = String.class),
 			@ApiResponse(code = 400, message = "Bad request", response = String.class),
 			@ApiResponse(code = 401, message = "Unauthorized", response = String.class),
@@ -90,6 +121,18 @@ public interface Controller {
 			"Generic - Analysis", })
 	public ResponseEntity<String> decryptCheckResults(
 			@ApiParam(name = "file", value = "", example = "", required = true) @RequestParam("file") MultipartFile file);
+
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Server response", response = String.class),
+			@ApiResponse(code = 400, message = "Bad request", response = String.class),
+			@ApiResponse(code = 401, message = "Unauthorized", response = String.class),
+			@ApiResponse(code = 404, message = "Not found", response = String.class),
+			@ApiResponse(code = 500, message = "Error for HTTPS call trustAnchors", response = String.class) })
+	@PostMapping("/client/generic/05-checkContent-Auto")
+	@ApiOperation(value = "Check Content In Database", notes = "This method checks if an uploaded encrypted file's information is stored in database and then returns an result", tags = {
+			"Generic - Analysis", })
+	public ResponseEntity<String> checkContentAuto(
+			@ApiParam(name = "number", value = "Any Character", example = "", required = true) @RequestParam("number") String number,
+			@ApiParam(name = "partnerID", value = "", example = "", required = true) @RequestParam("partnerID") String partnerID);
 
 	@ApiOperation(value = "Get All Data From Database Without Showing Number", nickname = "getAllData", notes = "Get All Data", response = String.class, authorizations = {}, tags = {
 			"Generic - CRUD", })
@@ -169,18 +212,6 @@ public interface Controller {
 			@ApiResponse(code = 401, message = "Unauthorized", response = String.class),
 			@ApiResponse(code = 404, message = "Not found", response = String.class),
 			@ApiResponse(code = 500, message = "Error for HTTPS call trustAnchors", response = String.class) })
-	@PostMapping("/client/data/05-checkContent-Auto")
-	@ApiOperation(value = "Check Content In Database", notes = "This method checks if an uploaded encrypted file's information is stored in database and then returns an result", tags = {
-			"Generic - Analysis", })
-	public ResponseEntity<String> checkContentAuto(
-			@ApiParam(name = "number", value = "Any Character", example = "", required = true) @RequestParam("number") String number,
-			@ApiParam(name = "partnerID", value = "", example = "", required = true) @RequestParam("partnerID") String partnerID);
-
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "Server response", response = String.class),
-			@ApiResponse(code = 400, message = "Bad request", response = String.class),
-			@ApiResponse(code = 401, message = "Unauthorized", response = String.class),
-			@ApiResponse(code = 404, message = "Not found", response = String.class),
-			@ApiResponse(code = 500, message = "Error for HTTPS call trustAnchors", response = String.class) })
 	@PostMapping("/client/test/createDataSet")
 	@ApiOperation(value = "Create Data Set", notes = "This method creates automatically a set of data in which the content concates the suffix from -0 to -101)", tags = {
 			"For Testing Purposes", })
@@ -203,7 +234,7 @@ public interface Controller {
 //        produces = { "application/json" },
 //        method = RequestMethod.GET)
 //	ResponseEntity<List<Data>> getAllDecryptedDatas();
-	
+
 //	@ApiResponses(value = { @ApiResponse(code = 200, message = "Server response", response = String.class),
 //			@ApiResponse(code = 400, message = "Bad request", response = String.class),
 //			@ApiResponse(code = 401, message = "Unauthorized", response = String.class),

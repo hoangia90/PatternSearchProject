@@ -10,6 +10,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.codec.digest.HmacUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,7 @@ import fr.cea.bigpi.fhe.dap.patternsearch.model.Description;
 import fr.cea.bigpi.fhe.dap.patternsearch.model.FHEFileSystem;
 import fr.cea.bigpi.fhe.dap.patternsearch.service.DataService;
 import fr.cea.bigpi.fhe.dap.patternsearch.service.FilesStorageService;
+import fr.cea.bigpi.fhe.dap.patternsearch.service.HMAC;
 import io.swagger.annotations.ApiParam;
 
 @Configuration
@@ -50,6 +52,11 @@ public class ControllerImpl implements Controller {
 	String fheServerAnalysis;
 	@Value("${application.fheServerData}")
 	String fheServerData;
+	@Value("${application.seal.sealDir}")
+	String sealDir;
+
+	@Value("${application.hashkey.sk}")
+	private String hashsk;
 
 	@SuppressWarnings("unused")
 	private static final Logger logger = LoggerFactory.getLogger(ControllerImpl.class);
@@ -62,6 +69,93 @@ public class ControllerImpl implements Controller {
 
 	@Autowired
 	DataService dataService;
+
+	@Autowired
+	HMAC hmac;
+
+	// Used for DeepLab Demo - Begin
+	@Override
+	public ResponseEntity<Description> createHashData(@RequestParam(name = "content", required = true) String content,
+			@RequestParam(name = "partnerID", required = true) String partnerID,
+			@RequestParam(name = "contractID", required = false) String contractID,
+			@RequestParam(name = "dataType", required = true) Integer dataType,
+			@RequestParam(name = "status", required = false) Integer status,
+			@RequestParam(name = "description", required = false) String description) {
+		try {
+//				Path uploadDir = Paths.get(seal.getSealDir() + "client/upload/");
+
+			String hmacSHA1lgorithm = "HmacSHA1";
+			String key = hashsk;
+			content = hmac.hmacWithApacheCommons(hmacSHA1lgorithm, content, key);
+
+			String filename = "temp";
+			content = seal.createLicense(content, seal.getUploadDir(), filename);
+			MultiValueMap<String, Object> parameters = new LinkedMultiValueMap<String, Object>();
+			parameters.add("file", new FileSystemResource(seal.getUploadDir() + filename + ".ct"));
+			parameters.add("partnerID", partnerID);
+			parameters.add("contractID", contractID);
+			parameters.add("dataType", dataType);
+			parameters.add("status", status);
+			parameters.add("description", description);
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("Content-Type", "multipart/form-data");
+//				headers.set("Accept", "application/json");
+			RestTemplate restTemplate = new RestTemplate();
+			ResponseEntity<Description> result = restTemplate.exchange(
+					fheServerData + "/openapi/v1/crud-data-master/data", HttpMethod.POST,
+					new HttpEntity<MultiValueMap<String, Object>>(parameters, headers), Description.class);
+			seal.deleteDir(seal.getUploadDir() + filename + ".ct");
+			return result;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+
+	@Override
+	public @ResponseBody ResponseEntity<String> checkHashContentAuto(@RequestParam("content") String content,
+			@RequestParam("partnerID") String partnerID) {
+		try {
+			// encrypt
+			String filename = "temp";
+
+			String hmacSHA1lgorithm = "HmacSHA1";
+			String key = hashsk;
+			content = hmac.hmacWithApacheCommons(hmacSHA1lgorithm, content, key);
+
+			seal.createLicense(content, seal.getUploadDir(), filename);
+			Path path = Paths.get(seal.getUploadDir() + filename + ".ct");
+			// upload
+			MultiValueMap<String, Object> parameters = new LinkedMultiValueMap<String, Object>();
+			parameters.add("file", new FileSystemResource(path.toString()));
+			parameters.add("partnerID", partnerID);
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("Content-Type", "multipart/form-data");
+			headers.set("Accept", "text/plain");
+			RestTemplate restTemplate = new RestTemplate();
+			ResponseEntity<String> res1 = restTemplate.postForEntity(
+					fheServerAnalysis + "/openapi/v1/crud-data-master/check/01-uploadEncryptedFile",
+					new HttpEntity<MultiValueMap<String, Object>>(parameters, headers), String.class);
+			seal.deleteDir(path.toString());
+			// check
+			if (res1.getStatusCode().is2xxSuccessful()) {
+				ResponseEntity<byte[]> res2 = checkWithEncryptedFile(partnerID, res1.getBody().toString());
+				// decrypt
+				if (res2.getStatusCode().is2xxSuccessful()) {
+					String path2 = seal.getResultDir() + "/" + res1.getBody() + ".ct";
+					Files.write(Paths.get(path2), res2.getBody());
+					String result2 = seal.decryptCheckResult(path2);
+					seal.deleteDir(path2);
+					return new ResponseEntity<String>(result2, HttpStatus.OK);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+
+	// Used for DeepLab Demo - End
 
 //	@PostMapping("/uploadfile")
 	public ResponseEntity<ResponseMessage> uploadFile(@RequestParam("file") MultipartFile file) {
@@ -277,21 +371,6 @@ public class ControllerImpl implements Controller {
 		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
-//	@Override
-//	public ResponseEntity<Data> getDecryptedDrivingLicense(@RequestParam(name = "Id") Integer Id) {
-//		try {
-//			Data data = dataService.getDataById(Id);
-//			data.setDataNo(seal.decrypt(data.getDataNo(),
-//					data.getDataId().toString()));
-//
-//			return new ResponseEntity<Data>(data, HttpStatus.OK);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//
-//		}
-//		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-//	}
-
 	@Override
 	public ResponseEntity<Description> createData(@RequestParam(name = "content", required = true) String content,
 			@RequestParam(name = "partnerID", required = true) String partnerID,
@@ -330,8 +409,8 @@ public class ControllerImpl implements Controller {
 //			@RequestParam(name = "drivingLicenseUpdate", required = true) DrivingLicenseUpdate drivingLicenseUpdate) {
 		try {
 			Integer Id = dataUpdate.getData_id();
-			String content = dataUpdate.getData();
-			dataUpdate.setData(null);
+			String content = dataUpdate.getContent();
+			dataUpdate.setContent(null);
 			String partnerID = dataUpdate.getPartner_id();
 			String contractID = dataUpdate.getContract_id();
 			Integer status = dataUpdate.getStatus();
@@ -431,6 +510,21 @@ public class ControllerImpl implements Controller {
 		}
 		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 	}
+
+//	@Override
+//	public ResponseEntity<Data> getDecryptedDrivingLicense(@RequestParam(name = "Id") Integer Id) {
+//		try {
+//			Data data = dataService.getDataById(Id);
+//			data.setDataNo(seal.decrypt(data.getDataNo(),
+//					data.getDataId().toString()));
+//
+//			return new ResponseEntity<Data>(data, HttpStatus.OK);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//
+//		}
+//		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+//	}
 
 //	String cookieSession;
 
@@ -813,8 +907,6 @@ public class ControllerImpl implements Controller {
 //		return true;
 //	}
 //	
-//
-//
 ////	@PutMapping("/user/{userid}")
 ////	private Users update(@RequestBody Users user, @PathVariable("userid") int userid) {
 ////		Users oldUser = userService.getUserById(user.getUserId());

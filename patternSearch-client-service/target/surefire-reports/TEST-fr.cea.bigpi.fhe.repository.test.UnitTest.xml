@@ -21,7 +21,7 @@
     <property name="line.separator" value="&#10;"/>
     <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
     <property name="os.name" value="Linux"/>
-    <property name="classworlds.conf" value="/home/hgnguyen/workspace-spring-tool-suite-4-4.9.0.RELEASE/.metadata/.plugins/org.eclipse.m2e.launching/launches/m2conf8838637829298677883.tmp"/>
+    <property name="classworlds.conf" value="/home/hgnguyen/workspace-spring-tool-suite-4-4.9.0.RELEASE/.metadata/.plugins/org.eclipse.m2e.launching/launches/m2conf13967938975307854572.tmp"/>
     <property name="jansi.force" value="true"/>
     <property name="sun.jnu.encoding" value="UTF-8"/>
     <property name="java.library.path" value="/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib"/>

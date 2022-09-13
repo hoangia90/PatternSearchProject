@@ -49,6 +49,9 @@ spring:
 application:
 #   fheServerData: http://10.8.34.73:9090
 #   fheServerAnalysis: http://10.8.34.73:9191
+   
+   hashkey: 
+    sk: super1man2with3zero3power4
 
    seal:
      sealDir: /home/hgnguyen/Desktop/seal
