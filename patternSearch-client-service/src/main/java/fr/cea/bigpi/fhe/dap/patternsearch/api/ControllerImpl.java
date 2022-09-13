@@ -21,7 +21,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
+//import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -35,8 +35,8 @@ import org.springframework.web.multipart.MultipartFile;
 import fr.cea.bigpi.fhe.dap.patternsearch.fhe.SEAL;
 import fr.cea.bigpi.fhe.dap.patternsearch.message.ResponseMessage;
 import fr.cea.bigpi.fhe.dap.patternsearch.model.Data;
+import fr.cea.bigpi.fhe.dap.patternsearch.model.DataUpdate;
 import fr.cea.bigpi.fhe.dap.patternsearch.model.Description;
-import fr.cea.bigpi.fhe.dap.patternsearch.model.DrivingLicenseUpdate;
 import fr.cea.bigpi.fhe.dap.patternsearch.model.FHEFileSystem;
 import fr.cea.bigpi.fhe.dap.patternsearch.service.DataService;
 import fr.cea.bigpi.fhe.dap.patternsearch.service.FilesStorageService;
@@ -51,6 +51,7 @@ public class ControllerImpl implements Controller {
 	@Value("${application.fheServerData}")
 	String fheServerData;
 
+	@SuppressWarnings("unused")
 	private static final Logger logger = LoggerFactory.getLogger(ControllerImpl.class);
 
 	@Autowired
@@ -93,7 +94,7 @@ public class ControllerImpl implements Controller {
 	}
 
 	@Override
-	public @ResponseBody ResponseEntity<String> checkDrivingLicenseByNoAuto(@RequestParam("number") String number,
+	public @ResponseBody ResponseEntity<String> checkContentAuto(@RequestParam("number") String number,
 			@RequestParam("partnerID") String partnerID) {
 		try {
 			// encrypt
@@ -114,7 +115,7 @@ public class ControllerImpl implements Controller {
 			seal.deleteDir(path.toString());
 			// check
 			if (res1.getStatusCode().is2xxSuccessful()) {
-				ResponseEntity<byte[]> res2 = checkLicense(partnerID, res1.getBody().toString());
+				ResponseEntity<byte[]> res2 = checkWithEncryptedFile(partnerID, res1.getBody().toString());
 				// decrypt
 				if (res2.getStatusCode().is2xxSuccessful()) {
 					String path2 = seal.getResultDir() + "/" + res1.getBody() + ".ct";
@@ -131,8 +132,7 @@ public class ControllerImpl implements Controller {
 	}
 
 	@Override
-	public @ResponseBody ResponseEntity<byte[]> encryptLicense(
-			@RequestParam(name = "number", required = true) String number) {
+	public @ResponseBody ResponseEntity<byte[]> encrypt(@RequestParam(name = "number", required = true) String number) {
 		try {
 			// String resultDir = seal.getResultDir();
 //			Path uploadDir = Paths.get(seal.getUploadDir());
@@ -149,7 +149,7 @@ public class ControllerImpl implements Controller {
 	}
 
 	@Override
-	public @ResponseBody ResponseEntity<String> uploadLicense(
+	public @ResponseBody ResponseEntity<String> uploadEncryptedFile(
 			@RequestParam(name = "file", required = true) MultipartFile file,
 			@RequestParam(name = "partnerID", required = true) String partnerID) {
 		try {
@@ -183,7 +183,7 @@ public class ControllerImpl implements Controller {
 	}
 
 	@Override
-	public @ResponseBody ResponseEntity<byte[]> checkLicense(
+	public @ResponseBody ResponseEntity<byte[]> checkWithEncryptedFile(
 			@RequestParam(name = "partnerID", required = true) String partnerID,
 			@RequestParam(name = "requestID", required = true) String requestID) {
 		try {
@@ -206,8 +206,7 @@ public class ControllerImpl implements Controller {
 	}
 
 	@Override
-	public ResponseEntity<String> decryptCheckedResult(
-			@RequestParam(name = "file", required = true) MultipartFile file) {
+	public ResponseEntity<String> decryptCheckResult(@RequestParam(name = "file", required = true) MultipartFile file) {
 		try {
 			ResponseEntity<ResponseMessage> re = uploadFile(file);
 			System.out.println(re);
@@ -223,7 +222,7 @@ public class ControllerImpl implements Controller {
 	}
 
 	@Override
-	public ResponseEntity<String> decryptLicense(@RequestParam(name = "file", required = true) MultipartFile file) {
+	public ResponseEntity<String> decryptData(@RequestParam(name = "file", required = true) MultipartFile file) {
 		try {
 			uploadFile(file);
 			String fileextension = com.google.common.io.Files.getFileExtension(file.getOriginalFilename());
@@ -239,7 +238,7 @@ public class ControllerImpl implements Controller {
 	}
 
 	@Override
-	public ResponseEntity<byte[]> downloadLicense(
+	public ResponseEntity<byte[]> downloadEncryptedFile(
 			@ApiParam(name = "Id", value = "", example = "", required = true) @RequestParam(name = "Id") Integer Id,
 			@ApiParam(name = "partnerID", value = "", example = "", required = true) @RequestParam("partnerID") String partnerID) {
 		try {
@@ -250,8 +249,8 @@ public class ControllerImpl implements Controller {
 			headers.set("Accept", "*/*");
 			RestTemplate restTemplate = new RestTemplate();
 			ResponseEntity<byte[]> result = restTemplate.exchange(
-					fheServerAnalysis + "/openapi/v1/crud-data-master/check/downloadEncryptedFile",
-					HttpMethod.POST, new HttpEntity<MultiValueMap<String, Object>>(parameters, headers), byte[].class);
+					fheServerAnalysis + "/openapi/v1/crud-data-master/check/downloadEncryptedFile", HttpMethod.POST,
+					new HttpEntity<MultiValueMap<String, Object>>(parameters, headers), byte[].class);
 			return result;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -260,33 +259,32 @@ public class ControllerImpl implements Controller {
 	}
 
 	@Override
-	public ResponseEntity<List<Data>> getAllDrivingLicenses(
-			@RequestParam(name = "partnerID", required = true) String partnerID) {
+	public ResponseEntity<List<Data>> getAllData(@RequestParam(name = "partnerID", required = true) String partnerID) {
 		try {
 			MultiValueMap<String, Object> parameters = new LinkedMultiValueMap<String, Object>();
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("Accept", "*/*");
 			RestTemplate restTemplate = new RestTemplate();
-			ResponseEntity<List<Data>> allDrivingLicenses = restTemplate.exchange(
-					fheServerData + "/openapi/v1/crud-data-master/data/all?partnerID=" + partnerID,
-					HttpMethod.GET, new HttpEntity<MultiValueMap<String, Object>>(parameters, headers),
+			ResponseEntity<List<Data>> allData = restTemplate.exchange(
+					fheServerData + "/openapi/v1/crud-data-master/data/all?partnerID=" + partnerID, HttpMethod.GET,
+					new HttpEntity<MultiValueMap<String, Object>>(parameters, headers),
 					new ParameterizedTypeReference<List<Data>>() {
 					});
-			return allDrivingLicenses;
+			return allData;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 	}
-	
+
 //	@Override
-//	public ResponseEntity<DrivingLicense> getDecryptedDrivingLicense(@RequestParam(name = "Id") Integer Id) {
+//	public ResponseEntity<Data> getDecryptedDrivingLicense(@RequestParam(name = "Id") Integer Id) {
 //		try {
-//			DrivingLicense drivinglicense = drivingLicenseService.getDrivingLicenseById(Id);
-//			drivinglicense.setDrivingLicenseNo(seal.decrypt(drivinglicense.getDrivingLicenseNo(),
-//					drivinglicense.getDrivingLicenseId().toString()));
+//			Data data = dataService.getDataById(Id);
+//			data.setDataNo(seal.decrypt(data.getDataNo(),
+//					data.getDataId().toString()));
 //
-//			return new ResponseEntity<DrivingLicense>(drivinglicense, HttpStatus.OK);
+//			return new ResponseEntity<Data>(data, HttpStatus.OK);
 //		} catch (Exception e) {
 //			e.printStackTrace();
 //
@@ -295,8 +293,7 @@ public class ControllerImpl implements Controller {
 //	}
 
 	@Override
-	public ResponseEntity<Description> createDrivingLicense(
-			@RequestParam(name = "drivingLicenseNo", required = true) String drivingLicenseNo,
+	public ResponseEntity<Description> createData(@RequestParam(name = "content", required = true) String content,
 			@RequestParam(name = "partnerID", required = true) String partnerID,
 			@RequestParam(name = "contractID", required = false) String contractID,
 			@RequestParam(name = "dataType", required = true) Integer dataType,
@@ -305,7 +302,7 @@ public class ControllerImpl implements Controller {
 		try {
 //			Path uploadDir = Paths.get(seal.getSealDir() + "client/upload/");
 			String filename = "temp";
-			seal.createLicense(drivingLicenseNo, seal.getUploadDir(), filename);
+			seal.createLicense(content, seal.getUploadDir(), filename);
 			MultiValueMap<String, Object> parameters = new LinkedMultiValueMap<String, Object>();
 			parameters.add("file", new FileSystemResource(seal.getUploadDir() + filename + ".ct"));
 			parameters.add("partnerID", partnerID);
@@ -329,43 +326,20 @@ public class ControllerImpl implements Controller {
 	}
 
 	@Override
-	public ResponseEntity<ArrayList<Integer>> createDrivingLicenseData(
-			@RequestParam(name = "drivingLicenseNo", required = true) String drivingLicenseNo,
-			@RequestParam(name = "partnerID", required = true) String partnerID,
-			@RequestParam(name = "contractID", required = false) String contractID,
-			@RequestParam(name = "dataType", required = true) Integer dataType,
-			@RequestParam(name = "status", required = false) Integer status,
-			@RequestParam(name = "description", required = false) String description) {
-		try {
-			ArrayList<Integer> result = new ArrayList<Integer>();
-			for (int i = 0; i < 102; i++) {
-				ResponseEntity<Description> res = createDrivingLicense(drivingLicenseNo + "-" + i, partnerID,
-						contractID, dataType, status, description);
-				result.add(Integer.parseUnsignedInt(res.getBody().getValue()));
-			}
-			return new ResponseEntity<ArrayList<Integer>>(result, HttpStatus.OK);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-	}
-
-	@Override
-	public ResponseEntity<Description> updateDrivingLicense(
-			@RequestBody(required = true) DrivingLicenseUpdate drivingLicenseUpdate) {
+	public ResponseEntity<Description> updateData(@RequestBody(required = true) DataUpdate dataUpdate) {
 //			@RequestParam(name = "drivingLicenseUpdate", required = true) DrivingLicenseUpdate drivingLicenseUpdate) {
 		try {
-			Integer Id = drivingLicenseUpdate.getDriving_license_id();
-			String drivingLicenseNo = drivingLicenseUpdate.getDriving_license_no();
-			drivingLicenseUpdate.setDriving_license_no(null);
-			String partnerID = drivingLicenseUpdate.getPartner_id();
-			String contractID = drivingLicenseUpdate.getContract_id();
-			Integer status = drivingLicenseUpdate.getStatus();
-			String description = drivingLicenseUpdate.getDescription();
+			Integer Id = dataUpdate.getData_id();
+			String content = dataUpdate.getData();
+			dataUpdate.setData(null);
+			String partnerID = dataUpdate.getPartner_id();
+			String contractID = dataUpdate.getContract_id();
+			Integer status = dataUpdate.getStatus();
+			String description = dataUpdate.getDescription();
 
 //			Path uploadDir = Paths.get(seal.getSealDir() + "client/upload/");
 			String filename = "temp";
-			seal.createLicense(drivingLicenseNo, seal.getUploadDir(), filename);
+			seal.createLicense(content, seal.getUploadDir(), filename);
 			MultiValueMap<String, Object> parameters = new LinkedMultiValueMap<String, Object>();
 			parameters.add("file", new FileSystemResource(seal.getUploadDir() + filename + ".ct"));
 			parameters.add("Id", Id);
@@ -398,9 +372,8 @@ public class ControllerImpl implements Controller {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("Accept", "*/*");
 			RestTemplate restTemplate = new RestTemplate();
-			return restTemplate.exchange(fheServerData + "/openapi/v1/crud-data-master/data",
-					HttpMethod.DELETE, new HttpEntity<MultiValueMap<String, Object>>(parameters, headers),
-					Description.class);
+			return restTemplate.exchange(fheServerData + "/openapi/v1/crud-data-master/data", HttpMethod.DELETE,
+					new HttpEntity<MultiValueMap<String, Object>>(parameters, headers), Description.class);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -408,7 +381,29 @@ public class ControllerImpl implements Controller {
 	}
 
 	@Override
-	public ResponseEntity<String> decryptCheckedResults(
+	public ResponseEntity<ArrayList<Integer>> createDataSet(
+			@RequestParam(name = "content", required = true) String content,
+			@RequestParam(name = "partnerID", required = true) String partnerID,
+			@RequestParam(name = "contractID", required = false) String contractID,
+			@RequestParam(name = "dataType", required = true) Integer dataType,
+			@RequestParam(name = "status", required = false) Integer status,
+			@RequestParam(name = "description", required = false) String description) {
+		try {
+			ArrayList<Integer> result = new ArrayList<Integer>();
+			for (int i = 0; i <= 101; i++) {
+				ResponseEntity<Description> res = createData(content + "-" + i, partnerID, contractID, dataType, status,
+						description);
+				result.add(Integer.parseUnsignedInt(res.getBody().getValue()));
+			}
+			return new ResponseEntity<ArrayList<Integer>>(result, HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+
+	@Override
+	public ResponseEntity<String> decryptCheckResults(
 			@RequestParam(name = "file", required = true) MultipartFile file) {
 		try {
 			FHEFileSystem ffsf = new FHEFileSystem();
@@ -521,7 +516,6 @@ public class ControllerImpl implements Controller {
 //		}
 //		return true;
 //	}
-
 
 //	@PostMapping("/openapi/v1/client/drivingLicense/03-check")
 //	//public ResponseEntity<ByteArrayResource> checkLicense(@RequestParam("file") MultipartFile file) throws Exception {

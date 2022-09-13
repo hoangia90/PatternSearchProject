@@ -23,10 +23,10 @@ management:
       
 spring:
   application:
-    name: dmp-fhe-patternsearch-service
+    name: dap-fhe-patternsearch-client-service
   
   datasource:
-    url: jdbc:postgresql://localhost:5432/cingulatadb
+    url: jdbc:postgresql://localhost:5432/patternSearchdb
     username: postgres
     password: 123
     

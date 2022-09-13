@@ -77,10 +77,9 @@ public class ControllerImpl implements Controller {
 	public ResponseEntity<List<Data>> getAllDecryptedData() {
 		try {
 			List<Data> data = dataService.getAllData();
-			for (Data drivinglicense : data) {
-//			drivinglicense.setDataNo(seal.decrypt(drivinglicense.getDataNo()));
-				drivinglicense.setDataNo(fhePatternSearchService.decrypt(drivinglicense.getDataNo(),
-						drivinglicense.getDataId().toString()));
+			for (Data datum : data) {
+//			drivinglicense.setContent(seal.decrypt(drivinglicense.getContent()));
+				datum.setContent(fhePatternSearchService.decrypt(datum.getContent(), datum.getDataId().toString()));
 			}
 			return new ResponseEntity<List<Data>>(data, HttpStatus.OK);
 		} catch (Exception e) {
@@ -124,7 +123,7 @@ public class ControllerImpl implements Controller {
 			for (Data drivingLicense : allData) {
 				if (drivingLicense.getPartnerId().equals(partnerID)) {
 //				data.add(drivingLicense.getDriving_license_no() + seal.getFilename() + ".ct");
-					data.add(drivingLicense.getDataNo() + drivingLicense.getDataId() + ".ct");
+					data.add(drivingLicense.getContent() + drivingLicense.getDataId() + ".ct");
 				}
 			}
 			if (data.size() > 0) {
@@ -154,28 +153,27 @@ public class ControllerImpl implements Controller {
 			@ApiParam(name = "status", value = "0 = inactive, 1 = active - but no used in driving license case.", example = "1") @RequestParam(name = "status", required = false) Integer status,
 			@ApiParam(name = "description", value = "driving licences of category A, B, C, etc.", example = "Category B") @RequestParam(name = "description", required = false) String description) {
 		try {
-			Data drivingLicense = new Data();
-			drivingLicense.setStatus(status);
-			drivingLicense.setDescription(description);
-			drivingLicense.setCreatedDate(tools.dateTimeToStringWithTime(LocalDateTime.now()));
-			drivingLicense.setPartnerId(partnerID);
-			drivingLicense.setContractId(contractID);
-			drivingLicense.setDataType(dataType);
-			drivingLicense = dataService.saveOrUpdate(drivingLicense);
-			int id = drivingLicense.getDataId();
+			Data data = new Data();
+			data.setStatus(status);
+			data.setDescription(description);
+			data.setCreatedDate(tools.dateTimeToStringWithTime(LocalDateTime.now()));
+			data.setPartnerId(partnerID);
+			data.setContractId(contractID);
+			data.setDataType(dataType);
+			data = dataService.saveOrUpdate(data);
+			int id = data.getDataId();
 			String fileDirStr = fhePatternSearchService
 					.createLicenseDir(partnerID + File.separator + contractID + File.separator + String.valueOf(id));
 
-			drivingLicense.setDataNo(fileDirStr);
-			drivingLicense = dataService.saveOrUpdate(drivingLicense);
+			data.setContent(fileDirStr);
+			data = dataService.saveOrUpdate(data);
 
 			Path fileDir = Paths.get(fileDirStr);
 
 			storageService.setFileDir(fileDir);
 			storageService.save(encryptedFile, String.valueOf(id) + ".ct");
 
-			return new ResponseEntity<Description>(new Description().value("" + drivingLicense.getDataId()),
-					HttpStatus.CREATED);
+			return new ResponseEntity<Description>(new Description().value("" + data.getDataId()), HttpStatus.CREATED);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -206,12 +204,12 @@ public class ControllerImpl implements Controller {
 						oldData.setDescription(description);
 					}
 					if (file != null) {
-//						Path fileDir = Paths.get(oldData.getDataNo());
+//						Path fileDir = Paths.get(oldData.getContent());
 //						storageService.setFileDir(fileDir);
 
-						String oldFilePath = oldData.getDataNo() + oldData.getDataId() + ".ct";
+						String oldFilePath = oldData.getContent() + oldData.getDataId() + ".ct";
 						fhePatternSearchService.deleteDir(oldFilePath);
-						storageService.save(file, oldData.getDataId() + ".ct", oldData.getDataNo());
+						storageService.save(file, oldData.getDataId() + ".ct", oldData.getContent());
 
 					}
 					oldData.setUpdatedDate(tools.dateTimeToStringWithTime(LocalDateTime.now()));
@@ -237,9 +235,9 @@ public class ControllerImpl implements Controller {
 		try {
 			Data drivinglicense = dataService.getDataById(id);
 			if (drivinglicense.getPartnerId().equals(partnerId)) {
-				fhePatternSearchService.deleteDir(drivinglicense.getDataNo());
+				fhePatternSearchService.deleteDir(drivinglicense.getContent());
 				dataService.delete(id);
-//				return new ResponseEntity<String>(drivinglicense.getDataNo(), HttpStatus.OK);
+//				return new ResponseEntity<String>(drivinglicense.getContent(), HttpStatus.OK);
 				return new ResponseEntity<Description>(new Description().value("Deleted sucessfully !"), HttpStatus.OK);
 			}
 //			return "Could not delete the driving license id :" + id;

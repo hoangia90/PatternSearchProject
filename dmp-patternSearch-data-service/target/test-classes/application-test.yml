@@ -25,14 +25,14 @@ spring:
    application:
       name: dmp-fhe-patternsearch-service
   
-#  datasource:
-#    url: jdbc:postgresql://localhost:5432/cingulatadb
-#    username: postgres
-#    password: 123
-   datasource:
-      url: jdbc:postgresql://10.8.34.73:5432/PatternSearch
-      username: postgres
-      password: bigpi!123!    
+datasource:
+   url: jdbc:postgresql://localhost:5432/cingulatadb
+   username: postgres
+   password: 123
+#   datasource:
+#      url: jdbc:postgresql://10.8.34.73:5432/PatternSearch
+#      username: postgres
+#      password: bigpi!123!    
     
    jpa:
       hibernate:

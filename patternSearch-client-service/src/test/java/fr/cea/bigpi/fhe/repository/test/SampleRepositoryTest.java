@@ -6,9 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit4.SpringRunner;
 
 
-import java.io.IOException;
+//import java.io.IOException;
 
-import org.codehaus.groovy.control.CompilationFailedException;
+//import org.codehaus.groovy.control.CompilationFailedException;
 import org.junit.FixMethodOrder;
 import org.junit.runners.MethodSorters;
 import org.slf4j.Logger;
@@ -46,24 +46,24 @@ public class SampleRepositoryTest {
 		logger.info("REsponse " + res);			
     }
 	
-	@Test
-	public void testAddAccount() {
-		logger.info("Testing a+b groovy ");
-		String restul = null; 
-		try {
-			restul = service.fhe_executor("21", "12");
-		} catch (CompilationFailedException | IOException e) {
-			e.printStackTrace();
-		}
-		logger.info("Testing a+b groovy result : {}", restul);
-		assert(restul.isBlank() == false);
+//	@Test
+//	public void testAddAccount() {
+//		logger.info("Testing a+b groovy ");
+//		String restul = null; 
+//		try {
+//			restul = service.fhe_executor("21", "12");
+//		} catch (CompilationFailedException | IOException e) {
+//			e.printStackTrace();
+//		}
+//		logger.info("Testing a+b groovy result : {}", restul);
+//		assert(restul.isBlank() == false);
 
 //		Account a = new Account();
 //		a.setNumber("12345678909");
 //		a.setBalance(1232);
 //		a.setCustomerId("234353464576586464");
 //		repository.save(a);
-	}
+//	}
 	
 //	@Test
 //  public void test02get() throws Exception {

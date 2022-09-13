@@ -71,7 +71,7 @@ public class ControllerImpl implements Controller {
 			for (Data drivingLicense : allDrivingLicenses) {
 				if (drivingLicense.getPartnerId().equals(partnerID)) {
 //				data.add(drivingLicense.getDriving_license_no() + seal.getFilename() + ".ct");
-					data.add(drivingLicense.getDataNo() + drivingLicense.getDataId() + ".ct");
+					data.add(drivingLicense.getContent() + drivingLicense.getDataId() + ".ct");
 				}
 			}
 			if (data.size() > 0 && data.size() <= 102) {
@@ -103,7 +103,7 @@ public class ControllerImpl implements Controller {
 			for (Data drivingLicense : allDrivingLicenses) {
 				if (drivingLicense.getPartnerId().equals(partnerID) && drivingLicense.getDataId().equals(Id)) {
 					String fileName = Id + ".ct";
-					String encryptedFilePath = drivingLicense.getDataNo() + fileName;
+					String encryptedFilePath = drivingLicense.getContent() + fileName;
 					Path path = Paths.get(encryptedFilePath);
 					byte[] returnData = Files.readAllBytes(path);
 					return new ResponseEntity<byte[]>(returnData, HttpStatus.OK);

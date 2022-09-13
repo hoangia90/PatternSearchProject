@@ -1,4 +1,5 @@
 package fr.cea.bigpi.fhe.dmp.patternsearch.service;
+
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,15 +37,14 @@ public class FHEPatternSearchService {
 	private String decrypCheckedResulttPath;
 	@Value("${application.seal.evaluatePath}")
 	private String evaluatePath;
-	
+
 	CommandExecution ce;
 
-	@PostConstruct 
+	@PostConstruct
 	public void init() {
 		this.ce = new CommandExecution();
 	}
 
-	
 	public String encrypt(String licenseNo, String dir, String filename) {
 		System.out.println("seal: Encrypting vector....");
 		List<String> command = Arrays.asList(encryptPath, licenseNo, filename, dir, String.valueOf(sample), keyDir);
@@ -52,7 +52,6 @@ public class FHEPatternSearchService {
 		return ce.execCm2(command, sealDir);
 	}
 
-	
 	public String decrypt(String dir, String filename) throws Exception {
 		System.out.println("seal: Decrypting tfhe muti-bit array....");
 		List<String> command = Arrays.asList(decryptPath, dir + filename + ".ct", String.valueOf(sample), keyDir);
@@ -87,7 +86,7 @@ public class FHEPatternSearchService {
 		System.out.println("seal: Creating driving license number in " + path + "....");
 		return path;
 	}
-	
+
 	// Create License with randomUUID name
 	public String createLicenseWithUUID(String licenseNo, String filename) {
 		String uniqueID = UUID.randomUUID().toString();
@@ -99,18 +98,18 @@ public class FHEPatternSearchService {
 		encrypt(licenseNo, path, filename);
 		return path;
 	}
-	
+
 	// Create License with DBID
-		public String createLicenseWithID(String licenseNo, int id) {
-			String uniqueID = String.valueOf(id);
-			String path = dataDir + uniqueID + "/";
-			createDir(path);
-			System.out.println("seal: Creating driving license number in " + path + "....");
-			licenseNo = convertLicenseNo2ASCII(licenseNo);
-			System.out.println(licenseNo);
-			encrypt(licenseNo, path, uniqueID);
-			return path;
-		}
+	public String createLicenseWithID(String licenseNo, int id) {
+		String uniqueID = String.valueOf(id);
+		String path = dataDir + uniqueID + "/";
+		createDir(path);
+		System.out.println("seal: Creating driving license number in " + path + "....");
+		licenseNo = convertLicenseNo2ASCII(licenseNo);
+		System.out.println(licenseNo);
+		encrypt(licenseNo, path, uniqueID);
+		return path;
+	}
 
 	public String createLicense(String licenseNo, String dir, String filename) {
 		System.out.println("seal: Creating driving license number in " + dir + "....");
@@ -133,9 +132,16 @@ public class FHEPatternSearchService {
 		String[] asciiStringSplited = asciiString.replace("\n", "").split("\\s+");
 		int size = asciiStringSplited.length;
 		byte[] asciiArray = new byte[size];
+
 		for (int i = 0; i < size; i++) {
-			asciiArray[i] = (byte) Integer.parseInt(asciiStringSplited[i]);
+			// Try to fix this warning later !!!!
+			try {
+				asciiArray[i] = (byte) Integer.parseInt(asciiStringSplited[i]);
+			} catch (NumberFormatException ex) { // handle your exception
+				// Print something
+			}
 		}
+
 		String drivingLicenseNoString = new String(asciiArray, StandardCharsets.US_ASCII);
 		// remove zero padding
 		drivingLicenseNoString = drivingLicenseNoString.replaceAll("\u0000", "");

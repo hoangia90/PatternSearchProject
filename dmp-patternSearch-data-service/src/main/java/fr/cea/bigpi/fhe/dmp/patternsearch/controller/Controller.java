@@ -44,8 +44,7 @@ public interface Controller {
 			@ApiResponse(code = 401, message = "Unauthorized", response = Description.class),
 			@ApiResponse(code = 404, message = "Not found", response = Description.class),
 			@ApiResponse(code = 500, message = "Error for HTTPS call trustAnchors", response = Description.class) })
-	@RequestMapping(value = "/crud-data-master/data/all", produces = {
-			"application/json" }, method = RequestMethod.GET)
+	@RequestMapping(value = "/crud-data-master/data/all", produces = { "application/json" }, method = RequestMethod.GET)
 	ResponseEntity<List<Data>> getAllData(
 			@ApiParam(name = "partnerID", value = "", example = "", required = true) @RequestParam("partnerID") String partnerID);
 

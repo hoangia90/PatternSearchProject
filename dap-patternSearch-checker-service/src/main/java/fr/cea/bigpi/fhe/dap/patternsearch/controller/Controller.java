@@ -34,7 +34,7 @@ public interface Controller {
 			@ApiParam(name = "file", value = "", example = "", required = true) @RequestParam("file") MultipartFile file,
 			@ApiParam(name = "partnerID", value = "", example = "", required = true) @RequestParam("partnerID") String partnerID);
 
-	@ApiOperation(value = "Check If An Uploaded Encrypted File Information Is In Database", notes = "This method checks if an uploaded encrypted information exists in database and returns an encrypted .ct file result. The file result is decrypted with 04-decryptCheckedResult. Note that: the requestID number is used in this method generated from the 01-uploadFile", nickname = "checkWithEncryptedFile", response = ResponseEntity.class, authorizations = {}, tags = {
+	@ApiOperation(value = "Check If An Uploaded Encrypted File's Information Is In Database", notes = "This method checks if an uploaded encrypted file's information exists in database and returns an encrypted .ct file result. The file result is decrypted with 04-decryptCheckedResult. Note that: the requestID number is used in this method generated from the 01-uploadFile", nickname = "checkWithEncryptedFile", response = ResponseEntity.class, authorizations = {}, tags = {
 			"Data For Client", })
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Server response", response = String.class),
 			@ApiResponse(code = 400, message = "Bad request", response = String.class),

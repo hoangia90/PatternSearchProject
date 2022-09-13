@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+//import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,8 +21,8 @@ import org.springframework.web.multipart.MultipartFile;
 //import com.fasterxml.jackson.core.JsonProcessingException;
 
 import fr.cea.bigpi.fhe.dap.patternsearch.model.Data;
+import fr.cea.bigpi.fhe.dap.patternsearch.model.DataUpdate;
 import fr.cea.bigpi.fhe.dap.patternsearch.model.Description;
-import fr.cea.bigpi.fhe.dap.patternsearch.model.DrivingLicenseUpdate;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
@@ -39,10 +39,10 @@ public interface Controller {
 			@ApiResponse(code = 401, message = "Unauthorized", response = String.class),
 			@ApiResponse(code = 404, message = "Not found", response = String.class),
 			@ApiResponse(code = 500, message = "Error for HTTPS call trustAnchors", response = String.class) })
-	@GetMapping("/client/drivingLicense/01-encrypt")
-	@ApiOperation(value = "Encrypt Driving License", notes = "This method encrypts a driving license number into encrypted .ct file", tags = {
-			"Driving License - Analysis", })
-	public @ResponseBody ResponseEntity<byte[]> encryptLicense(
+	@GetMapping("/client/generic/01-encrypt")
+	@ApiOperation(value = "Encrypt Information", notes = "This method encrypts a piece of information into an encrypted .ct file", tags = {
+			"Generic - Analysis", })
+	public @ResponseBody ResponseEntity<byte[]> encrypt(
 			@ApiParam(name = "number", value = "Any Character", example = "", required = true) @RequestParam("number") String number);
 
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Server response", response = String.class),
@@ -50,10 +50,10 @@ public interface Controller {
 			@ApiResponse(code = 401, message = "Unauthorized", response = String.class),
 			@ApiResponse(code = 404, message = "Not found", response = String.class),
 			@ApiResponse(code = 500, message = "Error for HTTPS call trustAnchors", response = String.class) })
-	@PostMapping("/client/drivingLicense/02-upload")
-	@ApiOperation(value = "Upload Encrypted Driving License Number File (.ct)", notes = "This method uploads a driving license number file and return the requestID number", tags = {
-			"Driving License - Analysis", })
-	public @ResponseBody ResponseEntity<String> uploadLicense(
+	@PostMapping("/client/generic/02-upload")
+	@ApiOperation(value = "Upload An Encrypted File (.ct)", notes = "This method uploads an encrypted file and return the requestID number", tags = {
+			"Generic - Analysis", })
+	public @ResponseBody ResponseEntity<String> uploadEncryptedFile(
 			@ApiParam(name = "file", value = "", example = "", required = true) @RequestParam("file") MultipartFile file,
 			@ApiParam(name = "partnerID", value = "", example = "", required = true) @RequestParam("partnerID") String partnerID);
 
@@ -62,10 +62,10 @@ public interface Controller {
 			@ApiResponse(code = 401, message = "Unauthorized", response = String.class),
 			@ApiResponse(code = 404, message = "Not found", response = String.class),
 			@ApiResponse(code = 500, message = "Error for HTTPS call trustAnchors", response = String.class) })
-	@GetMapping("/client/drivingLicense/03-check")
-	@ApiOperation(value = "Check Uploaded Encrypted Driving License Number In Database", notes = "This method checks if an uploaded encrypted driving license number is stored in database and returns an encrypted .ct file result. The file result is decrypted with 04-decryptCheckedResult. Note that: the requestID number is used in this method generated from the 02-upload method", tags = {
-			"Driving License - Analysis", })
-	public @ResponseBody ResponseEntity<byte[]> checkLicense(
+	@GetMapping("/client/generic/03-check")
+	@ApiOperation(value = "Check If The Uploaded Encrypted File's Information Is In Database", notes = "This method checks if an uploaded encrypted's information is stored in database and returns an encrypted .ct file result. The file result is decrypted with 04-decryptCheckedResult. Note that: the requestID number is used in this method generated from the 02-upload method", tags = {
+			"Generic - Analysis", })
+	public @ResponseBody ResponseEntity<byte[]> checkWithEncryptedFile(
 			@ApiParam(name = "partnerID", value = "", example = "", required = true) @RequestParam("partnerID") String partnerID,
 			@ApiParam(name = "requestID", value = "", example = "", required = true) @RequestParam("requestID") String requestID);
 
@@ -74,10 +74,10 @@ public interface Controller {
 			@ApiResponse(code = 401, message = "Unauthorized", response = String.class),
 			@ApiResponse(code = 404, message = "Not found", response = String.class),
 			@ApiResponse(code = 500, message = "Error for HTTPS call trustAnchors", response = String.class) })
-	@PostMapping("/client/drivingLicense/04-decryptCheckedResult")
+	@PostMapping("/client/generic/04-decryptCheckResult")
 	@ApiOperation(value = "Decrypted Checked Result File", notes = "This method decrypts a result file from 02-checkByFile method", tags = {
-			"Driving License - Analysis", })
-	public ResponseEntity<String> decryptCheckedResult(
+			"Generic - Analysis", })
+	public ResponseEntity<String> decryptCheckResult(
 			@ApiParam(name = "file", value = "", example = "", required = true) @RequestParam("file") MultipartFile file);
 
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Server response", response = String.class),
@@ -85,21 +85,21 @@ public interface Controller {
 			@ApiResponse(code = 401, message = "Unauthorized", response = String.class),
 			@ApiResponse(code = 404, message = "Not found", response = String.class),
 			@ApiResponse(code = 500, message = "Error for HTTPS call trustAnchors", response = String.class) })
-	@PostMapping("/client/drivingLicense/04-decryptCheckedResults")
+	@PostMapping("/client/generic/04-decryptCheckResults")
 	@ApiOperation(value = "Decrypted Checked Result File", notes = "This method decrypts results", tags = {
-			"Driving License - Analysis", })
-	public ResponseEntity<String> decryptCheckedResults(
+			"Generic - Analysis", })
+	public ResponseEntity<String> decryptCheckResults(
 			@ApiParam(name = "file", value = "", example = "", required = true) @RequestParam("file") MultipartFile file);
 
-	@ApiOperation(value = "Get All Driving License In Database Without Showing Number", nickname = "getAllDrivingLicenses", notes = "Get All Driving License Encrypted Numbers", response = String.class, authorizations = {}, tags = {
-			"Driving License - CRUD", })
+	@ApiOperation(value = "Get All Data From Database Without Showing Number", nickname = "getAllData", notes = "Get All Data", response = String.class, authorizations = {}, tags = {
+			"Generic - CRUD", })
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Server response", response = List.class),
 			@ApiResponse(code = 400, message = "Bad request", response = Description.class),
 			@ApiResponse(code = 401, message = "Unauthorized", response = Description.class),
 			@ApiResponse(code = 404, message = "Not found", response = Description.class),
 			@ApiResponse(code = 500, message = "Error for HTTPS call trustAnchors", response = Description.class) })
-	@GetMapping("/client/drivingLicenses")
-	ResponseEntity<List<Data>> getAllDrivingLicenses(
+	@GetMapping("/client/data")
+	ResponseEntity<List<Data>> getAllData(
 			@ApiParam(name = "partnerID", value = "", example = "", required = true) @RequestParam("partnerID") String partnerID);
 
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Server response", response = String.class),
@@ -107,11 +107,11 @@ public interface Controller {
 			@ApiResponse(code = 401, message = "Unauthorized", response = String.class),
 			@ApiResponse(code = 404, message = "Not found", response = String.class),
 			@ApiResponse(code = 500, message = "Error for HTTPS call trustAnchors", response = String.class) })
-	@PostMapping("/client/drivingLicense")
-	@ApiOperation(value = "Create Driving License Number", notes = "This method creates a driving license number", tags = {
-			"Driving License - CRUD", })
-	public ResponseEntity<Description> createDrivingLicense(
-			@ApiParam(name = "drivingLicenseNo", value = "Any Character", example = "") @RequestParam(name = "drivingLicenseNo", required = true) String drivingLicenseNo,
+	@PostMapping("/client/data")
+	@ApiOperation(value = "Create Data", notes = "This method encrypts a given information into an encrypted file and then stores it into the database", tags = {
+			"Generic - CRUD", })
+	public ResponseEntity<Description> createData(
+			@ApiParam(name = "content", value = "Any Character", example = "") @RequestParam(name = "content", required = true) String content,
 			@ApiParam(name = "partnerID", value = "", example = "") @RequestParam(name = "partnerID", required = true) String partnerID,
 			@ApiParam(name = "contractID", value = "", example = "") @RequestParam(name = "contractID", required = true) String contractID,
 			@ApiParam(name = "dataType", value = "Data Type", example = "12345") Integer dataType,
@@ -123,33 +123,33 @@ public interface Controller {
 			@ApiResponse(code = 401, message = "Unauthorized", response = String.class),
 			@ApiResponse(code = 404, message = "Not found", response = String.class),
 			@ApiResponse(code = 500, message = "Error for HTTPS call trustAnchors", response = String.class) })
-	@PutMapping("/client/drivingLicense")
-	@ApiOperation(value = "Update Driving License Number", notes = "This method modifies a driving license number", tags = {
-			"Driving License - CRUD", })
-	public ResponseEntity<Description> updateDrivingLicense(
-			@ApiParam(name = "drivingLicenseUpdate", value = "", example = "", required = true) @RequestBody DrivingLicenseUpdate drivingLicenseUpdate);
+	@PutMapping("/client/data")
+	@ApiOperation(value = "Update Data", notes = "This method updates the information of the given encrypted file", tags = {
+			"Generic - CRUD", })
+	public ResponseEntity<Description> updateData(
+			@ApiParam(name = "dataUpdate", value = "", example = "", required = true) @RequestBody DataUpdate dataUpdate);
 
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Server response", response = String.class),
 			@ApiResponse(code = 400, message = "Bad request", response = String.class),
 			@ApiResponse(code = 401, message = "Unauthorized", response = String.class),
 			@ApiResponse(code = 404, message = "Not found", response = String.class),
 			@ApiResponse(code = 500, message = "Error for HTTPS call trustAnchors", response = String.class) })
-	@DeleteMapping("/client/drivingLicense")
-	@ApiOperation(value = "Delete Driving License Number", notes = "This method deletes a driving license number", tags = {
-			"Driving License - CRUD", })
+	@DeleteMapping("/client/data")
+	@ApiOperation(value = "Delete An Encrypted File In The Database", notes = "Delete an encrypted file in the database", tags = {
+			"Generic - CRUD", })
 	public ResponseEntity<Description> deleteDrivingLicense(
 			@ApiParam(name = "id", value = "", example = "", required = true) @RequestParam(name = "id", required = true) Integer id,
 			@ApiParam(name = "partnerId", value = "", example = "", required = true) @RequestParam(name = "partnerId", required = true) String partnerId);
 
-	@ApiOperation(value = "Download Encrpted Driving License Number File (.ct)", notes = "This method download an encrpted driving license number file", nickname = "downloadFile", response = ResponseEntity.class, authorizations = {}, tags = {
-			"Driving License - Analysis", })
+	@ApiOperation(value = "Download An Encrpted File (.ct)", notes = "This method is used for downloading an encrypted file", nickname = "downloadEncryptedFile", response = ResponseEntity.class, authorizations = {}, tags = {
+			"Generic - Analysis", })
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Server response"),
 			@ApiResponse(code = 400, message = "Bad request", response = String.class),
 			@ApiResponse(code = 401, message = "Unauthorized", response = String.class),
 			@ApiResponse(code = 404, message = "Not found", response = String.class),
 			@ApiResponse(code = 500, message = "Error for HTTPS call trustAnchors", response = String.class) })
-	@PostMapping("/client/drivingLicense/download")
-	public ResponseEntity<byte[]> downloadLicense(
+	@PostMapping("/client/data/downloadEncryptedFile")
+	public ResponseEntity<byte[]> downloadEncryptedFile(
 			@ApiParam(name = "Id", value = "", example = "", required = true) @RequestParam(name = "Id") Integer Id,
 			@ApiParam(name = "partnerID", value = "", example = "", required = true) @RequestParam("partnerID") String partnerID);
 
@@ -158,10 +158,10 @@ public interface Controller {
 			@ApiResponse(code = 401, message = "Unauthorized", response = String.class),
 			@ApiResponse(code = 404, message = "Not found", response = String.class),
 			@ApiResponse(code = 500, message = "Error for HTTPS call trustAnchors", response = String.class) })
-	@PostMapping("/client/drivingLicense/decrypt")
-	@ApiOperation(value = "Decrypted Driving License File", notes = "This method decrypts a driving license number file", tags = {
-			"Driving License - Analysis", })
-	public ResponseEntity<String> decryptLicense(
+	@PostMapping("/client/data/decrypt")
+	@ApiOperation(value = "Decrypted Data", notes = "This method decrypts an encrypted file", tags = {
+			"Generic - Analysis", })
+	public ResponseEntity<String> decryptData(
 			@ApiParam(name = "file", value = "", example = "", required = true) @RequestParam("file") MultipartFile file);
 
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Server response", response = String.class),
@@ -169,10 +169,10 @@ public interface Controller {
 			@ApiResponse(code = 401, message = "Unauthorized", response = String.class),
 			@ApiResponse(code = 404, message = "Not found", response = String.class),
 			@ApiResponse(code = 500, message = "Error for HTTPS call trustAnchors", response = String.class) })
-	@PostMapping("/client/drivingLicense/05-checkByNo-Auto")
-	@ApiOperation(value = "Check An Encrypted Driving License Number In Database", notes = "This method checks if an uploaded encrypted driving license number is stored in database and returns an result", tags = {
-			"Driving License - Analysis", })
-	public ResponseEntity<String> checkDrivingLicenseByNoAuto(
+	@PostMapping("/client/data/05-checkContent-Auto")
+	@ApiOperation(value = "Check Content In Database", notes = "This method checks if an uploaded encrypted file's information is stored in database and then returns an result", tags = {
+			"Generic - Analysis", })
+	public ResponseEntity<String> checkContentAuto(
 			@ApiParam(name = "number", value = "Any Character", example = "", required = true) @RequestParam("number") String number,
 			@ApiParam(name = "partnerID", value = "", example = "", required = true) @RequestParam("partnerID") String partnerID);
 
@@ -181,19 +181,19 @@ public interface Controller {
 			@ApiResponse(code = 401, message = "Unauthorized", response = String.class),
 			@ApiResponse(code = 404, message = "Not found", response = String.class),
 			@ApiResponse(code = 500, message = "Error for HTTPS call trustAnchors", response = String.class) })
-	@PostMapping("/client/test/drivingLicense")
-	@ApiOperation(value = "Create Driving License Numbers", notes = "This method creates automatically driving license numbers with suffix (-0 -> -101)", tags = {
-			"Driving License - Testing", })
-	public ResponseEntity<ArrayList<Integer>> createDrivingLicenseData(
-			@ApiParam(name = "drivingLicenseNo", value = "Any Character", example = "") @RequestParam(name = "drivingLicenseNo", required = true) String drivingLicenseNo,
+	@PostMapping("/client/test/createDataSet")
+	@ApiOperation(value = "Create Data Set", notes = "This method creates automatically a set of data in which the content concates the suffix from -0 to -101)", tags = {
+			"For Testing Purposes", })
+	public ResponseEntity<ArrayList<Integer>> createDataSet(
+			@ApiParam(name = "content", value = "Any Character", example = "") @RequestParam(name = "content", required = true) String content,
 			@ApiParam(name = "partnerID", value = "", example = "") @RequestParam(name = "partnerID", required = true) String partnerID,
 			@ApiParam(name = "contractID", value = "", example = "") @RequestParam(name = "contractID", required = true) String contractID,
 			@ApiParam(name = "dataType", value = "Data Type", example = "12345") @RequestParam(name = "dataType", required = true) Integer dataType,
 			@ApiParam(name = "status", value = "0,1,2, etc.", example = "") @RequestParam(name = "status", required = false) Integer status,
 			@ApiParam(name = "description", value = "good, banned, etc.", example = "good") @RequestParam(name = "description", required = false) String description);
 
-//	@ApiOperation(value = "Get All Driving License In Database With Showing Number",
-//    		nickname = "applySecureComputAPlusB", notes = "get all decrypted driving license",
+//	@ApiOperation(value = "Get All Data In Database With Showing Number",
+//    		nickname = "applySecureComputAPlusB", notes = "get all decrypted data",
 //    		response = String.class, tags={ "Driving License", })
 //    @ApiResponses(value = { 
 //        @ApiResponse(code = 200, message = "Server response", response = Data.class),

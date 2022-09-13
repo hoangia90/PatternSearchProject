@@ -34,9 +34,9 @@ public class Data {
 	@JsonProperty("contractId")
 	private String contractId = null;
 
-	@Column(columnDefinition = "TEXT", name = "data_no")
-	@JsonProperty("dataNo")
-	private String dataNo = null;
+	@Column(columnDefinition = "TEXT", name = "content")
+	@JsonProperty("content")
+	private String content = null;
 
 	@JsonProperty("status")
 	private Integer status = null;
@@ -129,24 +129,24 @@ public class Data {
 		this.contractId = contractId;
 	}
 
-	public Data dataNo(String dataNo) {
-		this.dataNo = dataNo;
+	public Data dataNo(String content) {
+		this.content = content;
 		return this;
 	}
 
 	/**
-	 * Get dataNo
+	 * Get content
 	 * 
-	 * @return dataNo
+	 * @return content
 	 **/
 	@ApiModelProperty(value = "")
 
-	public String getDataNo() {
-		return dataNo;
+	public String getContent() {
+		return content;
 	}
 
-	public void setDataNo(String dataNo) {
-		this.dataNo = dataNo;
+	public void setContent(String content) {
+		this.content = content;
 	}
 
 	public Data status(Integer status) {
@@ -242,7 +242,7 @@ public class Data {
 				&& Objects.equals(this.dataType, data.dataType) 
 				&& Objects.equals(this.partnerId, data.partnerId)
 				&& Objects.equals(this.contractId, data.contractId) 
-				&& Objects.equals(this.dataNo, data.dataNo)
+				&& Objects.equals(this.content, data.content)
 				&& Objects.equals(this.status, data.status) 
 				&& Objects.equals(this.description, data.description)
 				&& Objects.equals(this.createdDate, data.createdDate)
@@ -251,7 +251,7 @@ public class Data {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(dataId, dataType, partnerId, dataNo, status, description, createdDate, updatedDate);
+		return Objects.hash(dataId, dataType, partnerId, content, status, description, createdDate, updatedDate);
 	}
 
 	@Override
@@ -262,7 +262,7 @@ public class Data {
 		sb.append("    dataType: ").append(toIndentedString(dataType)).append("\n");
 		sb.append("    partnerId: ").append(toIndentedString(partnerId)).append("\n");
 		sb.append("    contractId: ").append(toIndentedString(contractId)).append("\n");
-		sb.append("    dataNo: ").append(toIndentedString(dataNo)).append("\n");
+		sb.append("    content: ").append(toIndentedString(content)).append("\n");
 		sb.append("    status: ").append(toIndentedString(status)).append("\n");
 		sb.append("    description: ").append(toIndentedString(description)).append("\n");
 		sb.append("    createdDate: ").append(toIndentedString(createdDate)).append("\n");

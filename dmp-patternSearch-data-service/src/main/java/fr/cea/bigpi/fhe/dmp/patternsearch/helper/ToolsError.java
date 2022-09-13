@@ -7,7 +7,13 @@ import org.springframework.stereotype.Component;
 public class ToolsError {
 
 	public HttpStatus getHttpStatus(String message) {
-		int errorCode = Integer.parseInt(message.replace("error", "").trim());  	
+		int errorCode = 0;
+		try{
+		errorCode = Integer.parseInt(message.replace("error", "").trim());  
+		} catch(NumberFormatException ex){ // handle your exception
+			// Print something
+			System.out.println("Error !!!!");
+		}
 		System.out.println("Error code = " + errorCode);
 		
 		HttpStatus httpStatus = HttpStatus.valueOf(errorCode);
