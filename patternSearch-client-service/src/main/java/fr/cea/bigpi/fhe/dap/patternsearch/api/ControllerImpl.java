@@ -3,14 +3,12 @@ package fr.cea.bigpi.fhe.dap.patternsearch.api;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.codec.digest.HmacUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +20,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
-//import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -113,6 +110,53 @@ public class ControllerImpl implements Controller {
 	}
 
 	@Override
+	public ResponseEntity<Description> updateHashData(@RequestBody(required = true) DataUpdate dataUpdate) {
+		try {
+			Integer Id = dataUpdate.getData_id();
+
+			String hmacSHA1lgorithm = "HmacSHA1";
+			String key = hashsk;
+			String content = dataUpdate.getContent();
+			content = hmac.hmacWithApacheCommons(hmacSHA1lgorithm, content, key);
+
+			dataUpdate.setContent(null);
+			String partnerID = dataUpdate.getPartner_id();
+			String contractID = dataUpdate.getContract_id();
+			Integer status = dataUpdate.getStatus();
+			String description = dataUpdate.getDescription();
+
+//			Path uploadDir = Paths.get(seal.getSealDir() + "client/upload/");
+			String filename = "temp";
+			seal.createLicense(content, seal.getUploadDir(), filename);
+			MultiValueMap<String, Object> parameters = new LinkedMultiValueMap<String, Object>();
+			parameters.add("file", new FileSystemResource(seal.getUploadDir() + filename + ".ct"));
+			parameters.add("Id", Id);
+			parameters.add("partnerID", partnerID);
+			parameters.add("contractID", contractID);
+			parameters.add("status", status);
+			parameters.add("description", description);
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("Content-Type", "multipart/form-data");
+			headers.set("Accept", "application/xml, application/json");
+			RestTemplate restTemplate = new RestTemplate();
+			ResponseEntity<Description> result = restTemplate.exchange(
+					fheServerData + "/openapi/v1/crud-data-master/data", HttpMethod.PUT,
+					new HttpEntity<MultiValueMap<String, Object>>(parameters, headers), Description.class);
+			seal.deleteDir(seal.getUploadDir() + filename + ".ct");
+			return result;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+
+	@Override
+	public ResponseEntity<Description> deleteHashData(@RequestParam(name = "id", required = true) Integer id,
+			@RequestParam(name = "partnerId", required = true) String partnerId) {
+		return deleteData(id, partnerId);
+	}
+
+	@Override
 	public @ResponseBody ResponseEntity<String> checkHashContentAuto(@RequestParam("content") String content,
 			@RequestParam("partnerID") String partnerID) {
 		try {
@@ -155,6 +199,43 @@ public class ControllerImpl implements Controller {
 		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
+	@Override
+	public ResponseEntity<String> uploadCSVFunctionFile(@RequestParam("file") MultipartFile file,
+			@RequestParam(name = "partnerID", required = true) String partnerID,
+			@RequestParam(name = "contractID", required = false) String contractID,
+			@RequestParam(name = "dataType", required = true) Integer dataType,
+			@RequestParam(name = "status", required = false) Integer status,
+			@RequestParam(name = "description", required = false) String description) {
+		String message = "";
+		String content;
+		String[] strArray;
+		String[] rows;
+		String[] columns;
+		try {
+			if (!file.isEmpty()) {
+				content = new String(file.getBytes());
+				rows = content.split("\n");
+				strArray = new String[rows.length];
+				for (int i = 0; i < rows.length; i++) {
+					columns = rows[i].split("#");
+					if (columns.length == 3) {
+						strArray[i] = columns[1];
+						createHashData(strArray[i], partnerID, contractID, dataType, status, description);
+						message = message + "\n" + strArray[i];
+					} else {
+						throw new Exception("The number of columns must be 3!");
+					}
+				}
+			} else {
+				throw new Exception("The input file is empty!");
+			}
+			message = "Uploaded the file successfully: " + message;
+			return new ResponseEntity<String>(message, HttpStatus.OK);
+		} catch (Exception e) {
+			message = "Error: " + e.toString() + "\n Could not upload the file: " + file.getOriginalFilename() + "!";
+			return new ResponseEntity<String>(message, HttpStatus.EXPECTATION_FAILED);
+		}
+	}
 	// Used for DeepLab Demo - End
 
 //	@PostMapping("/uploadfile")
@@ -442,7 +523,7 @@ public class ControllerImpl implements Controller {
 	}
 
 	@Override
-	public ResponseEntity<Description> deleteDrivingLicense(@RequestParam(name = "id", required = true) Integer id,
+	public ResponseEntity<Description> deleteData(@RequestParam(name = "id", required = true) Integer id,
 			@RequestParam(name = "partnerId", required = true) String partnerId) {
 		try {
 			MultiValueMap<String, Object> parameters = new LinkedMultiValueMap<String, Object>();
@@ -481,35 +562,35 @@ public class ControllerImpl implements Controller {
 		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
-	@Override
-	public ResponseEntity<String> decryptCheckResults(
-			@RequestParam(name = "file", required = true) MultipartFile file) {
-		try {
-			FHEFileSystem ffsf = new FHEFileSystem();
-			ffsf.setContentBase64(file.getBytes());
-
-			String[] strFiles = ffsf.getContentBase64().split("#####");
-
-			String path = storageService.getFileDir().toString() + "/temp.ct";
-			for (String strFile : strFiles) {
-				FHEFileSystem ffs = new FHEFileSystem();
-				ffs.setContentBase64(strFile);
-
-				Files.write(Paths.get(path), ffs.getContentByteArray());
-//		        System.out.println(res);
-				String result = seal.decryptCheckResult(path);
-				if (result.equals("1")) {
-					seal.deleteDir(path);
-					return new ResponseEntity<String>("1", HttpStatus.OK);
-				}
-			}
-			seal.deleteDir(path);
-			return new ResponseEntity<String>("0", HttpStatus.OK);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-	}
+//	@Override
+//	public ResponseEntity<String> decryptCheckResults(
+//			@RequestParam(name = "file", required = true) MultipartFile file) {
+//		try {
+//			FHEFileSystem ffsf = new FHEFileSystem();
+//			ffsf.setContentBase64(file.getBytes());
+//
+//			String[] strFiles = ffsf.getContentBase64().split("#####");
+//
+//			String path = storageService.getFileDir().toString() + "/temp.ct";
+//			for (String strFile : strFiles) {
+//				FHEFileSystem ffs = new FHEFileSystem();
+//				ffs.setContentBase64(strFile);
+//
+//				Files.write(Paths.get(path), ffs.getContentByteArray());
+////		        System.out.println(res);
+//				String result = seal.decryptCheckResult(path);
+//				if (result.equals("1")) {
+//					seal.deleteDir(path);
+//					return new ResponseEntity<String>("1", HttpStatus.OK);
+//				}
+//			}
+//			seal.deleteDir(path);
+//			return new ResponseEntity<String>("0", HttpStatus.OK);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+//	}
 
 //	@Override
 //	public ResponseEntity<Data> getDecryptedDrivingLicense(@RequestParam(name = "Id") Integer Id) {

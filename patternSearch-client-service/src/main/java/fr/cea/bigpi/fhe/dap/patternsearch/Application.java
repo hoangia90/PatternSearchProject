@@ -40,12 +40,12 @@ import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-@SpringBootApplication
 //@EnableDiscoveryClient
-@EnableSwagger2
-@EnableCircuitBreaker
 //@EnableAutoConfiguration(exclude={DataSourceAutoConfiguration.class})
 //@EnableFeignClients(clients = { AccountClient.class })
+@SpringBootApplication
+@EnableSwagger2
+@EnableCircuitBreaker
 public class Application {
 	
 	@Value("${security.activation.status}")
@@ -81,10 +81,10 @@ public class Application {
 	 */	
 	private ApiInfo metadata() {
         return new ApiInfoBuilder()
-    		  .title("DMP - PARTTERN SEARCH-Service API documentation")
-              .description("This is API documentation for working with DMP - PARTTERN SEARCH Function Engine")
-    		  .title("FHE - DRIVING LICENSE - Client Service API documentation")
-              .description("This is API documentation for working with FHE - DRIVING LICENSE - Client Features")
+    		  .title("DMP - Pattern Search Client Service - API Documentation")
+              .description("This is API Documentation for Pattern Search Client Service")
+//    		  .title("FHE - Pattern Search - Client Service API documentation")
+//              .description("This is API documentation for Pattern Search - Client Features")
               .license("CEA 2.0")
               .licenseUrl("http://www.cea.fr/bigpi/licenses/LICENSE-2.0.html")
               .termsOfServiceUrl("")
