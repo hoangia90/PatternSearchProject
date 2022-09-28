@@ -22,17 +22,17 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class FilesStorageServiceImpl implements FilesStorageService {
-	
-	@Value("${application.seal.uploadDir}")
-	private String fileDirStr; 
-	// = "/home/hgnguyen/Desktop/seal/upload/";
-	private Path fileDir; //= Paths.get(fileDirStr);
 
-	@PostConstruct public void initService()
-	{
-		fileDir = Paths.get(fileDirStr);		
+	@Value("${application.seal.uploadDir}")
+	private String fileDirStr;
+	// = "/home/hgnguyen/Desktop/seal/upload/";
+	private Path fileDir; // = Paths.get(fileDirStr);
+
+	@PostConstruct
+	public void initService() {
+		fileDir = Paths.get(fileDirStr);
 	}
-	
+
 	@Override
 	public void setFileDir(Path fileDir) {
 		this.fileDir = fileDir;
@@ -69,7 +69,7 @@ public class FilesStorageServiceImpl implements FilesStorageService {
 			throw new RuntimeException("Could not store the file. Error: " + e.getMessage());
 		}
 	}
-	
+
 	public void save(MultipartFile file, String filename, String pathStr) {
 		Path path = Paths.get(pathStr);
 		try {
@@ -86,7 +86,7 @@ public class FilesStorageServiceImpl implements FilesStorageService {
 			save(file);
 		}
 	}
-	
+
 	@Override
 	public void saveAll(ArrayList<MultipartFile> files) {
 		// TODO Auto-generated method stub
@@ -139,34 +139,35 @@ public class FilesStorageServiceImpl implements FilesStorageService {
 			return null;
 		}
 	}
-	
+
 	public static void saveContain(MultipartFile multipartFile, File file) {
 
-	    // Creates a file stream of the file created.
-	    FileOutputStream fileOutputStream = null;
-	    try {
-	      fileOutputStream = new FileOutputStream(file);
-	    } catch (FileNotFoundException e) {
-	      e.printStackTrace();
-	    }
+		// Creates a file stream of the file created.
+		FileOutputStream fileOutputStream = null;
+		try {
+			fileOutputStream = new FileOutputStream(file);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
 
-	    // If the stream of files is not null then it passes the data of the file passed.
-	    if (fileOutputStream != null) {
-	      try {
-	        fileOutputStream.write(multipartFile.getBytes());
-	      } catch (IOException e) {
-	        e.printStackTrace();
-	      }
-	    }
+		// If the stream of files is not null then it passes the data of the file
+		// passed.
+		if (fileOutputStream != null) {
+			try {
+				fileOutputStream.write(multipartFile.getBytes());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 
-	    // Closes the file stream.
-	    try {
-	      if (fileOutputStream != null) {
-	        fileOutputStream.close();
-	      }
-	    } catch (IOException e) {
-	      e.printStackTrace();
-	    }
-	  }
+		// Closes the file stream.
+		try {
+			if (fileOutputStream != null) {
+				fileOutputStream.close();
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 }

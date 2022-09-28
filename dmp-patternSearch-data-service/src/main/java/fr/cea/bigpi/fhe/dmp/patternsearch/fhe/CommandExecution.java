@@ -12,7 +12,7 @@ public class CommandExecution {
 
 	private String sysPath;
 	private String OS;
-	
+
 	public ProcessBuilder getProcessBuilder() {
 		return processBuilder;
 	}
@@ -35,7 +35,7 @@ public class CommandExecution {
 	public CommandExecution() {
 		this.sysPath = FileSystems.getDefault().getPath("").toAbsolutePath().toString();
 		this.OS = System.getProperty("os.name");
-		
+
 		this.processBuilder = new ProcessBuilder();
 	}
 
@@ -63,7 +63,6 @@ public class CommandExecution {
 		return getOS().startsWith("Linux");
 	}
 
-	
 //	public String execCm(String command) {
 //		String content = "";
 //		try {
@@ -91,17 +90,16 @@ public class CommandExecution {
 //		return content;
 //	}
 
-	
-	public String execCm2(List <String> command, String workDir) {
+	public String execCm2(List<String> command, String workDir) {
 		String content = "";
-		
+
 		processBuilder.command(command);
-        processBuilder.directory(new File(workDir));
-		
+		processBuilder.directory(new File(workDir));
+
 		try {
-			
+
 			process = processBuilder.start();
-			
+
 			BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
 			String line;
@@ -121,8 +119,7 @@ public class CommandExecution {
 
 		return content;
 	}
-	
-	
+
 	// note: write unit tests later
 //	public static void main(String[] args) {
 //		

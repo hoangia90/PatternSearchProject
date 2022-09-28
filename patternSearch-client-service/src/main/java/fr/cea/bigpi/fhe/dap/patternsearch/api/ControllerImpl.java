@@ -229,7 +229,11 @@ public class ControllerImpl implements Controller {
 			} else {
 				throw new Exception("The input file is empty!");
 			}
-			message = "Uploaded the file successfully: " + message;
+			if (rows.length == 1) {
+				message = "Uploaded the file successfully, " + rows.length + " functions was added!" + ": " + message;
+			} else {
+				message = "Uploaded the file successfully, " + rows.length + " functions were added!" + ": " + message;
+			}
 			return new ResponseEntity<String>(message, HttpStatus.OK);
 		} catch (Exception e) {
 			message = "Error: " + e.toString() + "\n Could not upload the file: " + file.getOriginalFilename() + "!";

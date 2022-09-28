@@ -45,90 +45,90 @@ public class FHEPatternSearchService {
 		this.ce = new CommandExecution();
 	}
 
-	public String encrypt(String licenseNo, String dir, String filename) {
-		System.out.println("seal: Encrypting vector....");
-		List<String> command = Arrays.asList(encryptPath, licenseNo, filename, dir, String.valueOf(sample), keyDir);
-		System.out.println("seal: Encrypting vector.... end");
+	public String encrypt(String content, String dir, String filename) {
+		System.out.println("HE Engine: Encrypting vector.... start");
+		List<String> command = Arrays.asList(encryptPath, content, filename, dir, String.valueOf(sample), keyDir);
+		System.out.println("HE Engine: Encrypting vector.... end");
 		return ce.execCm2(command, sealDir);
 	}
 
 	public String decrypt(String dir, String filename) throws Exception {
-		System.out.println("seal: Decrypting tfhe muti-bit array....");
+		System.out.println("HE Engine: Decrypting vector.... start");
 		List<String> command = Arrays.asList(decryptPath, dir + filename + ".ct", String.valueOf(sample), keyDir);
 		String result_string = ce.execCm2(command, sealDir);
 		if (!result_string.isEmpty()) {
 			System.out.println(result_string);
-			result_string = convertASCII2LicenseNo(result_string);
-			System.out.println("seal: Decrypting vector....end");
+			result_string = convertASCII2Data(result_string);
+			System.out.println("HE Engine: Decrypting vector.... end");
 			return result_string;
 		} else {
-			System.out.println(
-					"The return result is empty! Vector decrypting failed! \n " + "seal: Decrypting vector....end");
+			System.out.println("The return result is empty! Vector decrypting failed! \n "
+					+ "HE Engine: Decrypting vector....end");
 			return dir;
 		}
 	}
 
 	public String createDir(String dir) {
-		System.out.println("seal: Creating directories....");
+		System.out.println("HE Engine: Creating directories....");
 		List<String> command = Arrays.asList("mkdir", "-p", dir);
 		return ce.execCm2(command, sealDir);
 	}
 
 	public String deleteDir(String dir) {
-		System.out.println("seal: Deleting " + dir + "....");
+		System.out.println("HE Engine: Deleting " + dir + "....");
 		List<String> command = Arrays.asList("rm", "-r", dir);
 		return ce.execCm2(command, sealDir);
 	}
 
-	public String createLicenseDir(String uniqueID) {
+	public String createDataDir(String uniqueID) {
 		String path = dataDir + uniqueID + "/";
 		createDir(path);
-		System.out.println("seal: Creating driving license number in " + path + "....");
+		System.out.println("HE Engine: Creating directory: " + path + "....");
 		return path;
 	}
 
-	// Create License with randomUUID name
-	public String createLicenseWithUUID(String licenseNo, String filename) {
+	// Create data with randomUUID name
+	public String createUUID4Data(String content, String filename) {
 		String uniqueID = UUID.randomUUID().toString();
 		String path = dataDir + uniqueID + "/";
 		createDir(path);
-		System.out.println("seal: Creating driving license number in " + path + "....");
-		licenseNo = convertLicenseNo2ASCII(licenseNo);
-		System.out.println(licenseNo);
-		encrypt(licenseNo, path, filename);
+		System.out.println("HE Engine: Creating directory: " + path + "....");
+		content = convertData2ASCII(content);
+		System.out.println(content);
+		encrypt(content, path, filename);
 		return path;
 	}
 
-	// Create License with DBID
-	public String createLicenseWithID(String licenseNo, int id) {
+	// Create DBID for data
+	public String createID4Data(String content, int id) {
 		String uniqueID = String.valueOf(id);
 		String path = dataDir + uniqueID + "/";
 		createDir(path);
-		System.out.println("seal: Creating driving license number in " + path + "....");
-		licenseNo = convertLicenseNo2ASCII(licenseNo);
-		System.out.println(licenseNo);
-		encrypt(licenseNo, path, uniqueID);
+		System.out.println("HE Engine: Creating data in " + path + "....");
+		content = convertData2ASCII(content);
+		System.out.println(content);
+		encrypt(content, path, uniqueID);
 		return path;
 	}
 
-	public String createLicense(String licenseNo, String dir, String filename) {
-		System.out.println("seal: Creating driving license number in " + dir + "....");
+	public String createData(String content, String dir, String filename) {
+		System.out.println("HE Engine: Creating data in " + dir + "....");
 		createDir(dir);
-		licenseNo = convertLicenseNo2ASCII(licenseNo);
-		encrypt(licenseNo, dir, filename);
+		content = convertData2ASCII(content);
+		encrypt(content, dir, filename);
 		return dir;
 	}
 
-	public static String convertLicenseNo2ASCII(String drivingLicenseNoString) {
-		System.out.println("seal: Converting license number to ASCII....");
-		byte[] ascii = drivingLicenseNoString.getBytes(StandardCharsets.US_ASCII);
+	public static String convertData2ASCII(String content) {
+		System.out.println("HE Engine: Converting content string to ASCII....");
+		byte[] ascii = content.getBytes(StandardCharsets.US_ASCII);
 		String asciiString = Arrays.toString(ascii);
 		asciiString = asciiString.replace("[", "").replace("]", "").replace(", ", " ");
 		return asciiString;
 	}
 
-	public static String convertASCII2LicenseNo(String asciiString) {
-		System.out.println("seal: Converting ASCII to license number...." + asciiString);
+	public static String convertASCII2Data(String asciiString) {
+		System.out.println("HE Engine: Converting ASCII to content string...." + asciiString);
 		String[] asciiStringSplited = asciiString.replace("\n", "").split("\\s+");
 		int size = asciiStringSplited.length;
 		byte[] asciiArray = new byte[size];
@@ -142,10 +142,10 @@ public class FHEPatternSearchService {
 			}
 		}
 
-		String drivingLicenseNoString = new String(asciiArray, StandardCharsets.US_ASCII);
+		String content = new String(asciiArray, StandardCharsets.US_ASCII);
 		// remove zero padding
-		drivingLicenseNoString = drivingLicenseNoString.replaceAll("\u0000", "");
-		return drivingLicenseNoString;
+		content = content.replaceAll("\u0000", "");
+		return content;
 	}
 
 	public String getFilename() {
@@ -157,22 +157,22 @@ public class FHEPatternSearchService {
 	}
 
 	public String decryptCheckResult(String dir) throws Exception {
-		System.out.println("seal: Decrypting tfhe muti-bit array....");
+		System.out.println("HE Engine: Decrypting HE muti-bit array.... start");
 		List<String> command = Arrays.asList(decrypCheckedResulttPath, dir, String.valueOf(sample), keyDir);
 		String result_string = ce.execCm2(command, sealDir);
 		if (!result_string.isEmpty()) {
 			System.out.println(result_string);
-			System.out.println("seal: Decrypting vector....end");
+			System.out.println("HE Engine: Decrypting vector.... end");
 			return result_string;
 		} else {
-			System.out.println(
-					"The return result is empty! Vector decrypting failed! \n " + "seal: Decrypting vector....end");
+			System.out.println("The return result is empty! Vector decrypting failed! \n "
+					+ "HE Engine: Decrypting vector....end");
 			return dir;
 		}
 	}
 
-	public boolean checkLicense(String source, ArrayList<String> data, String filename) throws Exception {
-		System.out.println("Cingulata: Checking driving license numbers in " + source + " and " + data + "....");
+	public boolean checkData(String source, ArrayList<String> data, String filename) throws Exception {
+		System.out.println("HE Engine: Checking data in " + source + " and " + data + "....");
 		ArrayList<String> cm = new ArrayList<>();
 		cm.add(evaluatePath);
 		cm.add(source);

@@ -8,24 +8,23 @@ public class ToolsError {
 
 	public HttpStatus getHttpStatus(String message) {
 		int errorCode = 0;
-		try{
-		errorCode = Integer.parseInt(message.replace("error", "").trim());  
-		} catch(NumberFormatException ex){ // handle your exception
+		try {
+			errorCode = Integer.parseInt(message.replace("error", "").trim());
+		} catch (NumberFormatException ex) { // handle your exception
 			// Print something
 			System.out.println("Error !!!!");
 		}
 		System.out.println("Error code = " + errorCode);
-		
+
 		HttpStatus httpStatus = HttpStatus.valueOf(errorCode);
 		return httpStatus;
 	}
 
-	public String createError (HttpStatus httpStatus) {
-		return "error " + httpStatus.value(); 
+	public String createError(HttpStatus httpStatus) {
+		return "error " + httpStatus.value();
 	}
-	
-	
-	public boolean isError (String message) {
-		return message != null && message.contains("error");  
+
+	public boolean isError(String message) {
+		return message != null && message.contains("error");
 	}
 }

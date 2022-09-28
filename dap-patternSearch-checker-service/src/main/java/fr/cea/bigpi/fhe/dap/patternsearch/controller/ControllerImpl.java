@@ -66,19 +66,19 @@ public class ControllerImpl implements Controller {
 			// clean result
 			fhePatternSearchService.deleteDir(fhePatternSearchService.getResultDir() + "requestID" + ".ct");
 			//
-			List<Data> allDrivingLicenses = dataService.getAllDatas();
+			List<Data> allData = dataService.getAllData();
 			ArrayList<String> data = new ArrayList<String>();
-			for (Data drivingLicense : allDrivingLicenses) {
-				if (drivingLicense.getPartnerId().equals(partnerID)) {
-//				data.add(drivingLicense.getDriving_license_no() + seal.getFilename() + ".ct");
-					data.add(drivingLicense.getContent() + drivingLicense.getDataId() + ".ct");
+			for (Data datum : allData) {
+				if (datum.getPartnerId().equals(partnerID)) {
+//				data.add(datum.getContent() + fhePatternSearchService.getFilename() + ".ct");
+					data.add(datum.getContent() + datum.getDataId() + ".ct");
 				}
 			}
 			if (data.size() > 0 && data.size() <= 102) {
 //				String message = "";
 				String fileName = requestID + ".ct";
 				String encryptedFilePath = storageService.getFileDir() + "/" + fileName;
-				fhePatternSearchService.checkLicense(encryptedFilePath, data, requestID);
+				fhePatternSearchService.checkData(encryptedFilePath, data, requestID);
 				String resultPath = fhePatternSearchService.getResultDir() + "/" + requestID + ".ct";
 //			Resource resource = storageService.load(resultPath);
 				Path path = Paths.get(resultPath);
@@ -99,11 +99,11 @@ public class ControllerImpl implements Controller {
 			@ApiParam(name = "Id", value = "", example = "", required = true) @RequestParam(name = "Id") Integer Id,
 			@ApiParam(name = "partnerID", value = "", example = "", required = true) @RequestParam("partnerID") String partnerID) {
 		try {
-			List<Data> allDrivingLicenses = dataService.getAllDatas();
-			for (Data drivingLicense : allDrivingLicenses) {
-				if (drivingLicense.getPartnerId().equals(partnerID) && drivingLicense.getDataId().equals(Id)) {
+			List<Data> allData = dataService.getAllData();
+			for (Data datum : allData) {
+				if (datum.getPartnerId().equals(partnerID) && datum.getDataId().equals(Id)) {
 					String fileName = Id + ".ct";
-					String encryptedFilePath = drivingLicense.getContent() + fileName;
+					String encryptedFilePath = datum.getContent() + fileName;
 					Path path = Paths.get(encryptedFilePath);
 					byte[] returnData = Files.readAllBytes(path);
 					return new ResponseEntity<byte[]>(returnData, HttpStatus.OK);

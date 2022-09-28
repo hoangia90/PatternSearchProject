@@ -16,127 +16,126 @@ import javax.validation.constraints.*;
 @Validated
 @javax.annotation.Generated(value = "io.swagger.codegen.languages.SpringCodegen", date = "2019-11-03T21:01:38.571Z")
 
-public class ObjectProperty   {
+public class ObjectProperty {
 	@JsonProperty("sessionId")
-	  private String sessionId = null;
+	private String sessionId = null;
 
-	  @JsonProperty("description")
-	  private String description = null;
+	@JsonProperty("description")
+	private String description = null;
 
-	  @JsonProperty("additionalProperties")
-	  @Valid
-	  private List<Description> additionalProperties = new ArrayList<Description>();
+	@JsonProperty("additionalProperties")
+	@Valid
+	private List<Description> additionalProperties = new ArrayList<Description>();
 
-	  public ObjectProperty sessionId(String sessionId) {
-	    this.sessionId = sessionId;
-	    return this;
-	  }
+	public ObjectProperty sessionId(String sessionId) {
+		this.sessionId = sessionId;
+		return this;
+	}
 
-	  /**
-	   * Get sessionId
-	   * @return sessionId
-	  **/
-	  @ApiModelProperty(required = true, value = "")
-	  @NotNull
+	/**
+	 * Get sessionId
+	 * 
+	 * @return sessionId
+	 **/
+	@ApiModelProperty(required = true, value = "")
+	@NotNull
 
+	public String getSessionId() {
+		return sessionId;
+	}
 
-	  public String getSessionId() {
-	    return sessionId;
-	  }
+	public void setSessionId(String sessionId) {
+		this.sessionId = sessionId;
+	}
 
-	  public void setSessionId(String sessionId) {
-	    this.sessionId = sessionId;
-	  }
+	public ObjectProperty description(String description) {
+		this.description = description;
+		return this;
+	}
 
-	  public ObjectProperty description(String description) {
-	    this.description = description;
-	    return this;
-	  }
+	/**
+	 * Get description
+	 * 
+	 * @return description
+	 **/
+	@ApiModelProperty(required = true, value = "")
+	@NotNull
 
-	  /**
-	   * Get description
-	   * @return description
-	  **/
-	  @ApiModelProperty(required = true, value = "")
-	  @NotNull
+	public String getDescription() {
+		return description;
+	}
 
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
-	  public String getDescription() {
-	    return description;
-	  }
+	public ObjectProperty additionalProperties(List<Description> additionalProperties) {
+		this.additionalProperties = additionalProperties;
+		return this;
+	}
 
-	  public void setDescription(String description) {
-	    this.description = description;
-	  }
+	public ObjectProperty addAdditionalPropertiesItem(Description additionalPropertiesItem) {
+		this.additionalProperties.add(additionalPropertiesItem);
+		return this;
+	}
 
-	  public ObjectProperty additionalProperties(List<Description> additionalProperties) {
-	    this.additionalProperties = additionalProperties;
-	    return this;
-	  }
+	/**
+	 * Get additionalProperties
+	 * 
+	 * @return additionalProperties
+	 **/
+	@ApiModelProperty(required = true, value = "")
+	@NotNull
 
-	  public ObjectProperty addAdditionalPropertiesItem(Description additionalPropertiesItem) {
-	    this.additionalProperties.add(additionalPropertiesItem);
-	    return this;
-	  }
+	@Valid
 
-	  /**
-	   * Get additionalProperties
-	   * @return additionalProperties
-	  **/
-	  @ApiModelProperty(required = true, value = "")
-	  @NotNull
+	public List<Description> getAdditionalProperties() {
+		return additionalProperties;
+	}
 
-	  @Valid
+	public void setAdditionalProperties(List<Description> additionalProperties) {
+		this.additionalProperties = additionalProperties;
+	}
 
-	  public List<Description> getAdditionalProperties() {
-	    return additionalProperties;
-	  }
+	@Override
+	public boolean equals(java.lang.Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		ObjectProperty objectProperty = (ObjectProperty) o;
+		return Objects.equals(this.sessionId, objectProperty.sessionId)
+				&& Objects.equals(this.description, objectProperty.description)
+				&& Objects.equals(this.additionalProperties, objectProperty.additionalProperties);
+	}
 
-	  public void setAdditionalProperties(List<Description> additionalProperties) {
-	    this.additionalProperties = additionalProperties;
-	  }
+	@Override
+	public int hashCode() {
+		return Objects.hash(sessionId, description, additionalProperties);
+	}
 
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("class ObjectProperty {\n");
 
-	  @Override
-	  public boolean equals(java.lang.Object o) {
-	    if (this == o) {
-	      return true;
-	    }
-	    if (o == null || getClass() != o.getClass()) {
-	      return false;
-	    }
-	    ObjectProperty objectProperty = (ObjectProperty) o;
-	    return Objects.equals(this.sessionId, objectProperty.sessionId) &&
-	        Objects.equals(this.description, objectProperty.description) &&
-	        Objects.equals(this.additionalProperties, objectProperty.additionalProperties);
-	  }
+		sb.append("    sessionId: ").append(toIndentedString(sessionId)).append("\n");
+		sb.append("    description: ").append(toIndentedString(description)).append("\n");
+		sb.append("    additionalProperties: ").append(toIndentedString(additionalProperties)).append("\n");
+		sb.append("}");
+		return sb.toString();
+	}
 
-	  @Override
-	  public int hashCode() {
-	    return Objects.hash(sessionId, description, additionalProperties);
-	  }
-
-	  @Override
-	  public String toString() {
-	    StringBuilder sb = new StringBuilder();
-	    sb.append("class ObjectProperty {\n");
-	    
-	    sb.append("    sessionId: ").append(toIndentedString(sessionId)).append("\n");
-	    sb.append("    description: ").append(toIndentedString(description)).append("\n");
-	    sb.append("    additionalProperties: ").append(toIndentedString(additionalProperties)).append("\n");
-	    sb.append("}");
-	    return sb.toString();
-	  }
-
-	  /**
-	   * Convert the given object to string with each line indented by 4 spaces
-	   * (except the first line).
-	   */
-	  private String toIndentedString(java.lang.Object o) {
-	    if (o == null) {
-	      return "null";
-	    }
-	    return o.toString().replace("\n", "\n    ");
-	  }
+	/**
+	 * Convert the given object to string with each line indented by 4 spaces
+	 * (except the first line).
+	 */
+	private String toIndentedString(java.lang.Object o) {
+		if (o == null) {
+			return "null";
+		}
+		return o.toString().replace("\n", "\n    ");
+	}
 }
-

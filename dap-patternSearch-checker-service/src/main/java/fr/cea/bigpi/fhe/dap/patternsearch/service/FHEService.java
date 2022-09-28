@@ -21,37 +21,30 @@ import groovy.lang.Script;
 public class FHEService {
 
 	protected Logger logger = LoggerFactory.getLogger(FHEService.class.getName());
-	private String appName; //a way to get the default parameter from application.yml
-	
-	@Autowired DataRepository drivingLicenseRepository;
-//	@Autowired private FHEPatternSearchService seal; 
-	
-	
+	private String appName; // a way to get the default parameter from application.yml
+
 	@Autowired
-	public FHEService(@Value("${spring.application.name}") String appName)
-	{
-		this.appName = appName;	
+	DataRepository drivingLicenseRepository;
+//	@Autowired private FHEPatternSearchService seal; 
+
+	@Autowired
+	public FHEService(@Value("${spring.application.name}") String appName) {
+		this.appName = appName;
 	}
-	
-	@HystrixCommand(    	
-    		groupKey="FHE_Service", commandKey = "FHE_PingService",
-    		fallbackMethod = "defaultPing" 
-	)
-	public String ping(String userName) {		
-		
+
+	@HystrixCommand(groupKey = "FHE_Service", commandKey = "FHE_PingService", fallbackMethod = "defaultPing")
+	public String ping(String userName) {
+
 		return appName + " say <" + userName + ">";
 	}
-	
-	public String defaultPing(String name, Throwable exception) {    	
-    	logger.info("callling from fallback Ping");
-    	logger.error("real exception : {}", exception.getMessage());
+
+	public String defaultPing(String name, Throwable exception) {
+		logger.info("callling from fallback Ping");
+		logger.error("real exception : {}", exception.getMessage());
 		return appName + "RuntimeException ! from instance to say Hello <" + name + ">";
 	}
 
-	@HystrixCommand(    	
-    		groupKey="FHE_Service", commandKey = "FHE_AplusBService",
-    		fallbackMethod = "defaultAplusB" 
-	)
+	@HystrixCommand(groupKey = "FHE_Service", commandKey = "FHE_AplusBService", fallbackMethod = "defaultAplusB")
 	public String fhe_executor(String a, String b) throws CompilationFailedException, IOException {
 		Binding binding = new Binding();
 		GroovyShell shell = new GroovyShell(binding);
@@ -61,12 +54,12 @@ public class FHEService {
 		binding.setVariable("b", b);
 		binding.setVariable("tools", scrpt);
 
-		String res = (String)shell.evaluate("tools.fhe_aplusb(a, b)");
-		return res; 
-	}	
-	
+		String res = (String) shell.evaluate("tools.fhe_aplusb(a, b)");
+		return res;
+	}
+
 	public String defaultAplusB(String a, String b, Throwable error) {
 		logger.error("real exception wheen executing a+b : {}", error.getMessage());
 		return null;
-	}	
+	}
 }

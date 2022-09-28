@@ -27,7 +27,7 @@ public interface Controller {
 
 //	private static final Logger logger = LoggerFactory.getLogger(Controller.class);
 
-	@ApiOperation(value = "call hello and simulating failException", nickname = "hello", notes = "call helloWorld", response = String.class, authorizations = {}, tags = {
+	@ApiOperation(value = "Call Hello And Simulating Fail Exception", nickname = "hello", notes = "Call HelloWorld", response = String.class, authorizations = {}, tags = {
 			"hello", })
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Server response", response = String.class),
 			@ApiResponse(code = 400, message = "Bad request", response = String.class),
@@ -64,19 +64,19 @@ public interface Controller {
 			@ApiResponse(code = 401, message = "Unauthorized", response = String.class),
 			@ApiResponse(code = 404, message = "Not found", response = String.class),
 			@ApiResponse(code = 500, message = "Error for HTTPS call trustAnchors", response = String.class) })
-//	@PostMapping("/prepare-data-master/drivingLicense/01-uploadFile")
+//	@PostMapping("/prepare-data-master/data/01-uploadFile")
 	public @ResponseBody ResponseEntity<String> uploadEncryptedFile(
 			@ApiParam(name = "file", value = "", example = "", required = true) @RequestParam("file") MultipartFile file,
 			@ApiParam(name = "partnerID", value = "", example = "", required = true) @RequestParam("partnerID") String partnerID);
 
 	@ApiOperation(value = "Check Uploaded Encrypted Info Is In Database", notes = "This method checks if an uploaded infomation is stored in database and returns an encrypted .ct file result. The file result is decrypted with 04-decryptCheckedResult. Note that: the requestID number is used in this method generated from the 01-uploadFile", nickname = "checkByFile", response = ResponseEntity.class, authorizations = {}, tags = {
-			"Driving License", })
+			"Data", })
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Server response", response = String.class),
 			@ApiResponse(code = 400, message = "Bad request", response = String.class),
 			@ApiResponse(code = 401, message = "Unauthorized", response = String.class),
 			@ApiResponse(code = 404, message = "Not found", response = String.class),
 			@ApiResponse(code = 500, message = "Error for HTTPS call trustAnchors", response = String.class) })
-//	@PostMapping("/prepare-data-master/drivingLicense/02-checkByFile")
+//	@PostMapping("/prepare-data-master/data/02-checkByFile")
 	public @ResponseBody ResponseEntity<byte[]> checkWithEncryptedFile(
 			@ApiParam(name = "partnerID", value = "", example = "", required = true) @RequestParam("partnerID") String partnerID,
 			@ApiParam(name = "requestID", value = "", example = "", required = true) @RequestParam("requestID") String requestID);
@@ -94,7 +94,7 @@ public interface Controller {
 			@ApiParam(name = "partnerID", value = "Partner ID", example = "12345") @RequestParam(name = "partnerID", required = true) String partnerID,
 			@ApiParam(name = "contractID", value = "contract ID", example = "12345") @RequestParam(name = "contractID", required = true) String contractId,
 			@ApiParam(name = "dataType", value = "Data Type", example = "12345") @RequestParam(name = "dataType", required = true) Integer dataType,
-			@ApiParam(name = "status", value = "0 = inactive, 1 = active - but no used in driving license case.", example = "1") @RequestParam(name = "status", required = false) Integer status,
+			@ApiParam(name = "status", value = "0 = inactive, 1 = active", example = "1") @RequestParam(name = "status", required = false) Integer status,
 			@ApiParam(name = "description", value = "A, B, C, etc.", example = "Category B") @RequestParam(name = "description", required = false) String description);
 
 	@ApiOperation(value = "Update Data", notes = "This method updates the information of an encrypted file", nickname = "updateData", response = Data.class, authorizations = {}, tags = {

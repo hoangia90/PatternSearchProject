@@ -24,7 +24,7 @@ public class Data {
 	@JsonProperty("dataId")
 //	@Column(name = "data_id")
 	private Integer dataId = null;
-	
+
 	@JsonProperty("dataType")
 	private Integer dataType = null;
 
@@ -71,7 +71,7 @@ public class Data {
 	public void setDataId(Integer dataId) {
 		this.dataId = dataId;
 	}
-	
+
 	//
 	public Data dataType(Integer dataType) {
 		this.dataType = dataType;
@@ -238,12 +238,9 @@ public class Data {
 			return false;
 		}
 		Data data = (Data) o;
-		return Objects.equals(this.dataId, data.dataId) 
-				&& Objects.equals(this.dataType, data.dataType) 
-				&& Objects.equals(this.partnerId, data.partnerId)
-				&& Objects.equals(this.contractId, data.contractId) 
-				&& Objects.equals(this.content, data.content)
-				&& Objects.equals(this.status, data.status) 
+		return Objects.equals(this.dataId, data.dataId) && Objects.equals(this.dataType, data.dataType)
+				&& Objects.equals(this.partnerId, data.partnerId) && Objects.equals(this.contractId, data.contractId)
+				&& Objects.equals(this.content, data.content) && Objects.equals(this.status, data.status)
 				&& Objects.equals(this.description, data.description)
 				&& Objects.equals(this.createdDate, data.createdDate)
 				&& Objects.equals(this.updatedDate, data.updatedDate);
