@@ -2,12 +2,16 @@ package fr.cea.bigpi.fhe.dap.patternsearch.api;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +35,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import fr.cea.bigpi.fhe.dap.patternsearch.fhe.SEAL;
+import fr.cea.bigpi.fhe.dap.patternsearch.helper.zip;
 import fr.cea.bigpi.fhe.dap.patternsearch.message.ResponseMessage;
 import fr.cea.bigpi.fhe.dap.patternsearch.model.Data;
 import fr.cea.bigpi.fhe.dap.patternsearch.model.DataUpdate;
@@ -69,6 +74,9 @@ public class ControllerImpl implements Controller {
 
 	@Autowired
 	HMAC hmac;
+
+	@Autowired
+	zip zip;
 
 	// Used for DeepLab Demo - Begin
 	@Override
@@ -273,7 +281,7 @@ public class ControllerImpl implements Controller {
 	}
 
 	@Override
-	public @ResponseBody ResponseEntity<String> checkContentAuto(@RequestParam("number") String number,
+	public @ResponseBody ResponseEntity<Boolean> checkContentAuto(@RequestParam("number") String number,
 			@RequestParam("partnerID") String partnerID) {
 		try {
 			// encrypt
@@ -297,17 +305,53 @@ public class ControllerImpl implements Controller {
 				ResponseEntity<byte[]> res2 = checkWithEncryptedFile(partnerID, res1.getBody().toString());
 				// decrypt
 				if (res2.getStatusCode().is2xxSuccessful()) {
-					String path2 = seal.getResultDir() + "/" + res1.getBody() + ".ct";
+					String path2 = seal.getResultDir() + "/" + res1.getBody() + "_cea.zip";
 					Files.write(Paths.get(path2), res2.getBody());
-					String result2 = seal.decryptCheckResult(path2);
+
+					// Unzip - start
+//					String fileZip = path2;
+//			        File destDir = new File(seal.getResultDir() );
+					ArrayList<String> extractedFiles = zip.ZipMultipleFiles(path2, seal.getResultDir());
+					// Unzip - end
+
+//					System.out.println("Halllooooo" + extractedFiles.get(1));
+					Integer intResult = 0;
+					for (int i = 0; i < extractedFiles.size(); i++) {
+						try {
+							intResult = intResult + Integer.parseInt( (seal.decryptCheckResult(extractedFiles.get(i))).trim() );
+							System.out.println("halllooooo : " + intResult);
+						} catch (NumberFormatException ex) {
+							ex.printStackTrace();
+						}
+					}
+
+//					String result2 = seal.decryptCheckResult(path2);
+//			        String result2 = "hello!";
 					seal.deleteDir(path2);
-					return new ResponseEntity<String>(result2, HttpStatus.OK);
+					boolean boolResult = false;
+					if (intResult > 0) {
+						boolResult = true;
+					}
+					return new ResponseEntity<Boolean>(boolResult, HttpStatus.OK);
 				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+
+	public static File newFile(File destinationDir, ZipEntry zipEntry) throws IOException {
+		File destFile = new File(destinationDir, zipEntry.getName());
+
+		String destDirPath = destinationDir.getCanonicalPath();
+		String destFilePath = destFile.getCanonicalPath();
+
+		if (!destFilePath.startsWith(destDirPath + File.separator)) {
+			throw new IOException("Entry is outside of the target dir: " + zipEntry.getName());
+		}
+
+		return destFile;
 	}
 
 	@Override

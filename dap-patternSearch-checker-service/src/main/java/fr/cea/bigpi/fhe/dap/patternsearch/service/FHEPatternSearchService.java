@@ -39,8 +39,11 @@ public class FHEPatternSearchService {
 	@Value("${application.seal.evaluatePath}")
 	private String evaluatePath;
 
+	// Bash execution library
 	CommandExecution ce;
-
+	// HE parameters
+	
+	
 	@PostConstruct
 	public void init() {
 		this.ce = new CommandExecution();

@@ -217,7 +217,7 @@ public interface Controller {
 	@PostMapping("/client/generic/05-checkContent-Auto")
 	@ApiOperation(value = "Check Content In Database", notes = "This method checks if an uploaded encrypted file's information is stored in database and then returns an result", tags = {
 			"Generic - Analysis", })
-	public ResponseEntity<String> checkContentAuto(
+	public ResponseEntity<Boolean> checkContentAuto(
 			@ApiParam(name = "number", value = "Any Character", example = "", required = true) @RequestParam("number") String number,
 			@ApiParam(name = "partnerID", value = "", example = "", required = true) @RequestParam("partnerID") String partnerID);
 

@@ -12,7 +12,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.springframework.test.context.ActiveProfiles;
 
-import fr.cea.bigpi.fhe.dap.patternsearch.tools.Tools;
+import fr.cea.bigpi.fhe.dap.patternsearch.helper.Tools;
 
 @SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test2") // load application-test.properties

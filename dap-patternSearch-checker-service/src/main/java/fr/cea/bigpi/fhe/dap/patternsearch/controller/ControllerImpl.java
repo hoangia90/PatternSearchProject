@@ -1,11 +1,16 @@
 package fr.cea.bigpi.fhe.dap.patternsearch.controller;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,36 +67,114 @@ public class ControllerImpl implements Controller {
 	public ResponseEntity<byte[]> checkWithEncryptedFile(
 			@ApiParam(name = "partnerID", value = "", example = "", required = true) @RequestParam("partnerID") String partnerID,
 			@ApiParam(name = "requestID", value = "", example = "", required = true) @RequestParam("requestID") String requestID) {
-		try {
-			// clean result
-			fhePatternSearchService.deleteDir(fhePatternSearchService.getResultDir() + "requestID" + ".ct");
-			//
-			List<Data> allData = dataService.getAllData();
-			ArrayList<String> data = new ArrayList<String>();
-			for (Data datum : allData) {
-				if (datum.getPartnerId().equals(partnerID)) {
-//				data.add(datum.getContent() + fhePatternSearchService.getFilename() + ".ct");
-					data.add(datum.getContent() + datum.getDataId() + ".ct");
-				}
+		int vectorSize = 102;
+		// clean result
+		fhePatternSearchService.deleteDir(fhePatternSearchService.getResultDir() + "requestID" + ".ct");
+		//
+		List<Data> allData = dataService.getAllData();
+		ArrayList<String> data = new ArrayList<String>();
+		for (Data datum : allData) {
+			if (datum.getPartnerId().equals(partnerID)) {
+//			data.add(datum.getContent() + fhePatternSearchService.getFilename() + ".ct");
+				data.add(datum.getContent() + datum.getDataId() + ".ct");
 			}
-			if (data.size() > 0 && data.size() <= 102) {
-//				String message = "";
+		}
+		//
+
+		try {
+//			if (data.size() > 0 && data.size() <= vectorSize) {
+////				String message = "";
+//				String fileName = requestID + ".ct";
+//				String encryptedFilePath = storageService.getFileDir() + "/" + fileName;
+//				fhePatternSearchService.checkData(encryptedFilePath, data, requestID);
+//				String resultPath = fhePatternSearchService.getResultDir() + "/" + requestID + ".ct";
+////			Resource resource = storageService.load(resultPath);
+//				Path path = Paths.get(resultPath);
+//				byte[] returnData = Files.readAllBytes(path);
+//				fhePatternSearchService.deleteDir(path.toString());
+//				return new ResponseEntity<byte[]>(returnData, HttpStatus.OK);
+//				//
+//			} else if (data.size() > 0 && data.size() > vectorSize) {
+
+
+				List<List<String>> parts = chopped(data, vectorSize);
 				String fileName = requestID + ".ct";
 				String encryptedFilePath = storageService.getFileDir() + "/" + fileName;
-				fhePatternSearchService.checkData(encryptedFilePath, data, requestID);
-				String resultPath = fhePatternSearchService.getResultDir() + "/" + requestID + ".ct";
-//			Resource resource = storageService.load(resultPath);
-				Path path = Paths.get(resultPath);
+
+				String[] resultPath = new String[parts.size()];
+				for (int i = 0; i < parts.size(); i++) {
+					try {
+						String outputPath = requestID + "." + (i + 1) + "." + parts.size();
+						System.out.println(outputPath);
+						fhePatternSearchService.checkData(encryptedFilePath, (ArrayList<String>) parts.get(i),
+								outputPath);
+						resultPath[i] = fhePatternSearchService.getResultDir() + "/" + outputPath + ".ct";
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				;
+
+				// Check if file exist
+//				boolean ready = false;
+//				String strCheckPath = resultPath[(parts.size()-1)];
+//				Path checkPath = Paths.get(strCheckPath);
+//				while (!ready) {
+//					checkPath = Paths.get(strCheckPath);
+//					System.out.println(checkPath + " : " + Files.exists(checkPath));
+//					if (Files.exists(checkPath)) {
+//						ready = true;
+//					}
+//				}
+				
+				// Zip result files - start
+				String zipResultPath = fhePatternSearchService.getResultDir() + "/" + requestID + ".zip";
+				FileOutputStream fos = new FileOutputStream(zipResultPath);
+				ZipOutputStream zipOut = new ZipOutputStream(fos);
+				for (String srcFile : resultPath) {
+					File fileToZip = new File(srcFile);
+					FileInputStream fis = new FileInputStream(fileToZip);
+					ZipEntry zipEntry = new ZipEntry(fileToZip.getName());
+					zipOut.putNextEntry(zipEntry);
+
+					byte[] bytes = new byte[1024];
+					int length;
+					while ((length = fis.read(bytes)) >= 0) {
+						zipOut.write(bytes, 0, length);
+					}
+					fis.close();
+				}
+				zipOut.close();
+				fos.close();
+				// Zip result files - end
+				
+				for (int i = 0; i < resultPath.length; i++) {
+					fhePatternSearchService.deleteDir(resultPath[i]);
+				}
+
+				Path path = Paths.get(zipResultPath);
 				byte[] returnData = Files.readAllBytes(path);
-				fhePatternSearchService.deleteDir(path.toString());
+//				fhePatternSearchService.deleteDir(path.toString());
 				return new ResponseEntity<byte[]>(returnData, HttpStatus.OK);
-			} else {
-				throw new Exception("Number of files must be smaller than 102");
-			}
+
+//			} else {
+//				throw new Exception("Number of files must be smaller than 102");
+//			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+
+	// chops a list into non-view sublists of length L
+	static <T> List<List<T>> chopped(List<T> list, final int L) {
+		List<List<T>> parts = new ArrayList<List<T>>();
+		final int N = list.size();
+		for (int i = 0; i < N; i += L) {
+			parts.add(new ArrayList<T>(list.subList(i, Math.min(N, i + L))));
+		}
+		return parts;
 	}
 
 	@Override

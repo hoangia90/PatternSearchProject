@@ -1,4 +1,4 @@
-package fr.cea.bigpi.fhe.dap.patternsearch.tools;
+package fr.cea.bigpi.fhe.dap.patternsearch.helper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
