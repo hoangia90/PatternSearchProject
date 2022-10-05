@@ -35,7 +35,8 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import fr.cea.bigpi.fhe.dap.patternsearch.fhe.SEAL;
-import fr.cea.bigpi.fhe.dap.patternsearch.helper.zip;
+import fr.cea.bigpi.fhe.dap.patternsearch.helper.Tools;
+import fr.cea.bigpi.fhe.dap.patternsearch.helper.Zip;
 import fr.cea.bigpi.fhe.dap.patternsearch.message.ResponseMessage;
 import fr.cea.bigpi.fhe.dap.patternsearch.model.Data;
 import fr.cea.bigpi.fhe.dap.patternsearch.model.DataUpdate;
@@ -76,7 +77,10 @@ public class ControllerImpl implements Controller {
 	HMAC hmac;
 
 	@Autowired
-	zip zip;
+	Zip zip;
+
+	@Autowired
+	Tools tools;
 
 	// Used for DeepLab Demo - Begin
 	@Override
@@ -296,43 +300,45 @@ public class ControllerImpl implements Controller {
 			headers.set("Content-Type", "multipart/form-data");
 			headers.set("Accept", "text/plain");
 			RestTemplate restTemplate = new RestTemplate();
-			ResponseEntity<String> res1 = restTemplate.postForEntity(
+			ResponseEntity<String> requestIdResponse = restTemplate.postForEntity(
 					fheServerAnalysis + "/openapi/v1/crud-data-master/check/01-uploadEncryptedFile",
 					new HttpEntity<MultiValueMap<String, Object>>(parameters, headers), String.class);
 			seal.deleteDir(path.toString());
 			// check
-			if (res1.getStatusCode().is2xxSuccessful()) {
-				ResponseEntity<byte[]> res2 = checkWithEncryptedFile(partnerID, res1.getBody().toString());
+			if (requestIdResponse.getStatusCode().is2xxSuccessful()) {
+				String requestId = requestIdResponse.getBody();
+				ResponseEntity<byte[]> zipResultResponse = checkWithEncryptedFile(partnerID, requestId);
 				// decrypt
-				if (res2.getStatusCode().is2xxSuccessful()) {
-					String path2 = seal.getResultDir() + "/" + res1.getBody() + "_cea.zip";
-					Files.write(Paths.get(path2), res2.getBody());
+				if (zipResultResponse.getStatusCode().is2xxSuccessful()) {
 
-					// Unzip - start
-//					String fileZip = path2;
-//			        File destDir = new File(seal.getResultDir() );
-					ArrayList<String> extractedFiles = zip.ZipMultipleFiles(path2, seal.getResultDir());
-					// Unzip - end
-
-//					System.out.println("Halllooooo" + extractedFiles.get(1));
-					Integer intResult = 0;
-					for (int i = 0; i < extractedFiles.size(); i++) {
-						try {
-							intResult = intResult + Integer.parseInt( (seal.decryptCheckResult(extractedFiles.get(i))).trim() );
-							System.out.println("halllooooo : " + intResult);
-						} catch (NumberFormatException ex) {
-							ex.printStackTrace();
+					boolean isDirCreated = tools.creatDir(seal.getResultDir() + "/client_" + requestId);
+					if (isDirCreated) {
+						// Save Zip Result File
+						String zipResultPath = seal.getResultDir() + "/client_" + requestId + "/" + requestId + ".zip";
+						Files.write(Paths.get(zipResultPath), zipResultResponse.getBody());
+						// Unzip - start
+						ArrayList<String> extractedFiles = zip.UnzipFile(zipResultPath,
+								seal.getResultDir() + "/client_" + requestId);
+						// Unzip - end
+						Integer intResult = 0;
+						for (int i = 0; i < extractedFiles.size(); i++) {
+							try {
+								intResult = intResult
+										+ Integer.parseInt((seal.decryptCheckResult(extractedFiles.get(i))).trim());
+								System.out.println("halllooooo : " + intResult);
+							} catch (NumberFormatException ex) {
+								ex.printStackTrace();
+							}
 						}
+						seal.deleteDir(zipResultPath);
+						boolean boolResult = false;
+						if (intResult > 0) {
+							boolResult = true;
+						}
+						return new ResponseEntity<Boolean>(boolResult, HttpStatus.OK);
+					} else {
+						throw new Exception("Could not created the directory");
 					}
-
-//					String result2 = seal.decryptCheckResult(path2);
-//			        String result2 = "hello!";
-					seal.deleteDir(path2);
-					boolean boolResult = false;
-					if (intResult > 0) {
-						boolResult = true;
-					}
-					return new ResponseEntity<Boolean>(boolResult, HttpStatus.OK);
 				}
 			}
 		} catch (Exception e) {
@@ -598,7 +604,8 @@ public class ControllerImpl implements Controller {
 			@RequestParam(name = "description", required = false) String description) {
 		try {
 			ArrayList<Integer> result = new ArrayList<Integer>();
-			for (int i = 0; i <= 101; i++) {
+//			for (int i = 0; i <= 101; i++) {
+			for (int i = 0; i <= 100000; i++) {
 				ResponseEntity<Description> res = createData(content + "-" + i, partnerID, contractID, dataType, status,
 						description);
 				result.add(Integer.parseUnsignedInt(res.getBody().getValue()));

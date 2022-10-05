@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import fr.cea.bigpi.fhe.dap.patternsearch.helper.Tools;
+import fr.cea.bigpi.fhe.dap.patternsearch.helper.Zip;
 import fr.cea.bigpi.fhe.dap.patternsearch.model.Data;
 //import fr.cea.bigpi.fhe.dap.patternsearch.model.FHEFileSystem;
 import fr.cea.bigpi.fhe.dap.patternsearch.service.DataService;
@@ -39,6 +41,12 @@ public class ControllerImpl implements Controller {
 
 	@Autowired
 	FilesStorageService storageService;
+
+	@Autowired
+	Zip zip;
+
+	@Autowired
+	Tools tools;
 
 	static final Logger logger = LoggerFactory.getLogger(ControllerImpl.class);
 
@@ -96,27 +104,25 @@ public class ControllerImpl implements Controller {
 //				//
 //			} else if (data.size() > 0 && data.size() > vectorSize) {
 
+			List<List<String>> parts = chopped(data, vectorSize);
+			String fileName = requestID + ".ct";
+			String encryptedFilePath = storageService.getFileDir() + "/" + fileName;
 
-				List<List<String>> parts = chopped(data, vectorSize);
-				String fileName = requestID + ".ct";
-				String encryptedFilePath = storageService.getFileDir() + "/" + fileName;
-
-				String[] resultPath = new String[parts.size()];
-				for (int i = 0; i < parts.size(); i++) {
-					try {
-						String outputPath = requestID + "." + (i + 1) + "." + parts.size();
-						System.out.println(outputPath);
-						fhePatternSearchService.checkData(encryptedFilePath, (ArrayList<String>) parts.get(i),
-								outputPath);
-						resultPath[i] = fhePatternSearchService.getResultDir() + "/" + outputPath + ".ct";
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+			String[] resultPaths = new String[parts.size()];
+			for (int i = 0; i < parts.size(); i++) {
+				try {
+					String outputPath = requestID + "." + (i + 1) + "." + parts.size();
+					System.out.println(outputPath);
+					fhePatternSearchService.checkData(encryptedFilePath, (ArrayList<String>) parts.get(i), outputPath);
+					resultPaths[i] = fhePatternSearchService.getResultDir() + "/" + outputPath + ".ct";
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
-				;
+			}
+			;
 
-				// Check if file exist
+			// Check if file exist
 //				boolean ready = false;
 //				String strCheckPath = resultPath[(parts.size()-1)];
 //				Path checkPath = Paths.get(strCheckPath);
@@ -127,30 +133,17 @@ public class ControllerImpl implements Controller {
 //						ready = true;
 //					}
 //				}
-				
-				// Zip result files - start
-				String zipResultPath = fhePatternSearchService.getResultDir() + "/" + requestID + ".zip";
-				FileOutputStream fos = new FileOutputStream(zipResultPath);
-				ZipOutputStream zipOut = new ZipOutputStream(fos);
-				for (String srcFile : resultPath) {
-					File fileToZip = new File(srcFile);
-					FileInputStream fis = new FileInputStream(fileToZip);
-					ZipEntry zipEntry = new ZipEntry(fileToZip.getName());
-					zipOut.putNextEntry(zipEntry);
 
-					byte[] bytes = new byte[1024];
-					int length;
-					while ((length = fis.read(bytes)) >= 0) {
-						zipOut.write(bytes, 0, length);
-					}
-					fis.close();
-				}
-				zipOut.close();
-				fos.close();
+			// Zip result files - start
+			boolean isDirCreated = tools.creatDir(fhePatternSearchService.getResultDir() + "/" + requestID);
+			if (isDirCreated) {
+
+				String zipResultPath = zip.zipMultipleFiles(fhePatternSearchService.getResultDir() + "/" + requestID,
+						requestID, resultPaths);
 				// Zip result files - end
-				
-				for (int i = 0; i < resultPath.length; i++) {
-					fhePatternSearchService.deleteDir(resultPath[i]);
+
+				for (int i = 0; i < resultPaths.length; i++) {
+					fhePatternSearchService.deleteDir(resultPaths[i]);
 				}
 
 				Path path = Paths.get(zipResultPath);
@@ -158,9 +151,9 @@ public class ControllerImpl implements Controller {
 //				fhePatternSearchService.deleteDir(path.toString());
 				return new ResponseEntity<byte[]>(returnData, HttpStatus.OK);
 
-//			} else {
-//				throw new Exception("Number of files must be smaller than 102");
-//			}
+			} else {
+				throw new Exception("Could not created the directory");
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
