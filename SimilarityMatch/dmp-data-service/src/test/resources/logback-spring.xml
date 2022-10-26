@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<property name="LOG_TEMP" value="./logs"/>
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+    <!-- Required for Loglevel managment into the Spring Petclinic Admin Server-->
+    <jmxConfigurator/>
+</configuration>

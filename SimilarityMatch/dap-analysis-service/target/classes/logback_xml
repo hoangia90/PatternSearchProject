@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="false">
+	<property scope="context" name="logger.type" value="transfer-service"/>
+	<include resource="org/springframework/boot/logging/logback/base.xml" />
+	<appender name="STASH" class="ch.qos.logback.core.rolling.RollingFileAppender">
+	    <file>/opt/deployment/dmp/dmp-mem-service.log</file>
+	    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+	        <fileNamePattern>/opt/deployment/dmp/dmp-mem-service.%d{yyyy-MM-dd}.log</fileNamePattern>
+	        <maxHistory>7</maxHistory>
+	    </rollingPolicy>  
+	    <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
+	</appender>
+	<root level="INFO">
+	    <appender-ref ref="STASH" />        
+	</root>
+	<logger name="org.springframework" level="INFO"/>
+</configuration>
