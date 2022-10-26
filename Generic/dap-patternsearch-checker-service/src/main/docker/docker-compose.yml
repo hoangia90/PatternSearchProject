@@ -1,0 +1,31 @@
+version: '2'
+
+services:
+  app:
+    image: 'dap-patternsearch-analysis-service:latest'
+    build:
+      context: .
+    container_name: dap-patternsearch-analysis-service
+    depends_on:
+      - db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/patternSearchdb
+      # - SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5432/patternSearchdb
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=123
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    expose:
+      - 9191
+    ports:
+      - 9191:9191 
+  db:
+    image: 'postgres:13.1-alpine'
+    container_name: db
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=123
+      - POSTGRES_DB=patternSearchdb
+    volumes: 
+      - ./init_db.sh:/docker-entrypoint-initdb.d/init_db.sh

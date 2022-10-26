@@ -1,0 +1,102 @@
+server:  
+   port: ${PORT:9090}
+   servlet:
+      session:
+         timeout: 18000 # Session timeout. If a duration suffix is not specified, seconds is used.                
+
+eureka:
+   client:
+      enabled: false
+
+#logging:
+#  level: INFO
+  
+security:
+   activation:
+      status: false      
+   # basic auth credentials
+   user:
+      name: bigpi
+      password: password
+     
+#use for admin client
+management:
+   security:
+      enabled: false
+      
+spring:  
+   datasource:
+    driver-class-name: org.postgresql.Driver
+#    url: jdbc:postgresql://localhost:5432/patternSearchdb
+#    url: jdbc:postgresql://host.docker.internal:5432/patternSearchdb
+    url: jdbc:postgresql://localhost:5432/patternSearchdb
+    username: postgres
+    password: 123 
+#   datasource:
+#      url: jdbc:postgresql://10.8.34.73:5432/PatternSearch
+#      username: postgres
+#      password: bigpi!123!
+    
+   jpa:
+      hibernate.ddl-auto: update
+      show-sql: true
+      properties:
+         hibernate:
+            dialect: org.hibernate.dialect.PostgreSQLDialect
+#        format_sql: true
+      
+      
+logging.level.org.hibernate.SQL: DEBUG
+logging.level.org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+
+#filesStorageServiceConfig:
+#  fileDirStr: /home/hgnguyen/Desktop/seal/upload/
+
+#seal:
+#  sealDir: /home/hgnguyen/Desktop/seal/
+#  dataDir: /home/hgnguyen/Desktop/seal/data/
+#  resultDir: /home/hgnguyen/Desktop/seal/result/
+#  keyDir: /home/hgnguyen/Desktop/seal/keys/
+#  uploadDir: /home/hgnguyen/Desktop/seal/upload/
+#  sample: 40
+#  filename: l
+
+#    FilesStorageServiceImpl & FHEPatternSearchService
+#     sealDir: /opt/fhe/datalake/seal
+#     keyDir: ${application.seal.sealDir}/keys/
+application:
+   seal:
+#     sealDir: /home/hgnguyen/Desktop/seal
+     sealDir: /etc/seal/
+     dataDir: ${application.seal.sealDir}/data/
+     resultDir: ${application.seal.sealDir}/result/
+     keyDir: ${application.seal.sealDir}/keys/
+     uploadDir: ${application.seal.sealDir}/upload/
+     sample: 40
+     filename: l
+     encryptPath: ${application.seal.sealDir}/patternSearch_encrypt_v2
+     decryptPath: ${application.seal.sealDir}/patternSearch_decrypt_v2
+     decrypCheckedResulttPath: ${application.seal.sealDir}/patternSearch_decrypt_result_v2
+     evaluatePath: ${application.seal.sealDir}/patternSearch_evaluate_v2
+
+#    seal:
+#      sealDir: /opt/fhe/datalake/seal
+##     sealDir: /opt/fhe/seal/bin/patternSearch
+#      dataDir: ${application.seal.sealDir}/data/
+#      resultDir: ${application.seal.sealDir}/result/
+#      uploadDir: ${application.seal.sealDir}/upload/
+#      sample: 40
+#      filename: l
+#      keyDir: ${application.seal.sealDir}/keys/
+##      patternSearchBin: /opt/fhe/datalake/seal
+#      patternSearchBin: /opt/fhe/seal/bin/patternSearch
+#      encryptPath: ${application.seal.patternSearchBin}/patternSearch_encrypt_v2
+#      decryptPath: ${application.seal.patternSearchBin}/patternSearch_decrypt_v2
+#      decrypCheckedResulttPath: ${application.seal.patternSearchBin}/patternSearch_decrypt_result_v2
+#      evaluatePath: ${application.seal.patternSearchBin}/patternSearch_evaluate_v2
+##      keyDir: ${application.seal.patternSearchBin}/keys/
+
+
+      
+         
