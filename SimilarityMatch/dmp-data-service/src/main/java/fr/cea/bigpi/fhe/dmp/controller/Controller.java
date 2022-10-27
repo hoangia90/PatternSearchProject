@@ -110,7 +110,7 @@ public interface Controller {
 			@ApiParam(name = "Id", value = "", example = "", required = true) @RequestParam(name = "Id") Integer Id,
 			@ApiParam(name = "partnerID", value = "", example = "12345", required = true) @RequestParam(name = "partnerID") String partnerID,
 			@ApiParam(name = "contractID", value = "contract Id", example = "12345", required = true) @RequestParam(name = "contractID", required = true) String contractId,
-			@ApiParam(name = "dataType", value = "Data Type", example = "12345") @RequestParam(name = "dataType", required = true) Integer dataType,
+			@ApiParam(name = "dataType", value = "Data Type", example = "12345") @RequestParam(name = "dataType", required = false) Integer dataType,
 			@ApiParam(name = "status", value = "0,1,2, etc.", example = "", required = false) @RequestParam(name = "status", required = false) Integer status,
 			@ApiParam(name = "description", value = "good, banned, etc.", example = "banned", required = false) @RequestParam(name = "description", required = false) String description);
 

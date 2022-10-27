@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import fr.cea.bigpi.fhe.dmp.Application;
-import fr.cea.bigpi.fhe.dmp.service.FHEService;
-import fr.cea.bigpi.fhe.dmp.service.FHESimilarityMatchService;
+import fr.cea.bigpi.fhe.dmp.service.FHEGenericService;
+import fr.cea.bigpi.fhe.dmp.service.FHESimilarityMatchingService;
 
 import java.io.IOException;
 
@@ -34,8 +34,8 @@ public class SampleRepositoryTest {
 
 	//@Autowired MetadataRepository repository;
 	
-	@Autowired FHEService service;
-	@Autowired FHESimilarityMatchService fheSimilarityService; 
+	@Autowired FHEGenericService service;
+	@Autowired FHESimilarityMatchingService fheSimilarityService; 
 	
 	final static Logger logger = LoggerFactory.getLogger( SampleRepositoryTest.class );
 	

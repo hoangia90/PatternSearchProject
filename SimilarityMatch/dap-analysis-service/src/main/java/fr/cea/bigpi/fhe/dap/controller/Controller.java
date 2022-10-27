@@ -21,7 +21,7 @@ import io.swagger.annotations.ApiResponses;
 public interface Controller {
 
 	final Logger logger = LoggerFactory.getLogger(Controller.class.getName());
-	
+
 	@ApiOperation(value = "Upload Encrypted File (.ct)", notes = "This method uploads an encrypted file and return the requestID number", nickname = "uploadEncryptedFile", response = String.class, authorizations = {}, tags = {
 			"Data For Client", })
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Server response", response = String.class),
@@ -33,7 +33,7 @@ public interface Controller {
 	public @ResponseBody ResponseEntity<String> uploadEncryptedFile(
 			@ApiParam(name = "file", value = "", example = "", required = true) @RequestParam("file") MultipartFile file,
 			@ApiParam(name = "partnerID", value = "", example = "", required = true) @RequestParam("partnerID") String partnerID);
-	
+
 	@ApiOperation(value = "Download Encrpted File", notes = "This method download an encrpted file", nickname = "downloadEncrptedFile", response = ResponseEntity.class, authorizations = {}, tags = {
 			"Data For Client", })
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Server response"),
@@ -45,7 +45,7 @@ public interface Controller {
 	public ResponseEntity<byte[]> downloadEncryptedFile(
 			@ApiParam(name = "Id", value = "", example = "", required = true) @RequestParam(name = "Id") Integer Id,
 			@ApiParam(name = "partnerID", value = "", example = "", required = true) @RequestParam("partnerID") String partnerID);
-	
+
 //	@ApiOperation(value = "Check If An Uploaded Encrypted File's Information Is In Database", notes = "This method checks if an uploaded encrypted file's information exists in database and returns an encrypted .ct file result. The file result is decrypted with 04-decryptCheckedResult. Note that: the requestID number is used in this method generated from the 01-uploadFile", nickname = "checkWithEncryptedFile", response = ResponseEntity.class, authorizations = {}, tags = {
 //			"Data For Client", })
 //	@ApiResponses(value = { @ApiResponse(code = 200, message = "Server response", response = String.class),
@@ -57,7 +57,7 @@ public interface Controller {
 //	public @ResponseBody ResponseEntity<byte[]> checkWithEncryptedFile(
 //			@ApiParam(name = "partnerID", value = "", example = "", required = true) @RequestParam("partnerID") String partnerID,
 //			@ApiParam(name = "requestID", value = "", example = "", required = true) @RequestParam("requestID") String requestID);
-	
+
 	@ApiOperation(value = "Check If An Uploaded Encrypted File's Information Is In Database", notes = "This method checks if an uploaded encrypted file's information exists in database and returns an encrypted .ct file result. The file result is decrypted with 04-decryptCheckedResult. Note that: the requestID number is used in this method generated from the 01-uploadFile", nickname = "checkWithEncryptedFile", response = ResponseEntity.class, authorizations = {}, tags = {
 			"Data For Client", })
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Server response", response = String.class),
@@ -70,8 +70,7 @@ public interface Controller {
 			@ApiParam(name = "partnerID", value = "", example = "", required = true) @RequestParam("partnerID") String partnerID,
 			@ApiParam(name = "requestID", value = "", example = "", required = true) @RequestParam("requestID") String requestID,
 			@ApiParam(name = "dataId", value = "", example = "", required = true) @RequestParam("dataId") String dataId);
-	
-	
+
 //	@ApiOperation(value = "Upload Encrypted Data File (.ct)", notes = "This method uploads a data file and return the requestID number", nickname = "uploadDataFile", response = String.class, authorizations = {}, tags = {
 //			"Data Analysis", })
 //	@ApiResponses(value = { @ApiResponse(code = 200, message = "Server response", response = String.class),

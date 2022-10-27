@@ -424,57 +424,57 @@ public class ControllerImpl implements Controller {
 
 	String cookieSession;
 
-	@Override
-	public ResponseEntity<Description> servicelogin(String partnerLoginURL, String userName, String pw) {
-		try {
-			RestTemplate testRestTemplate = new RestTemplate();
+//	@Override
+//	public ResponseEntity<Description> servicelogin(String partnerLoginURL, String userName, String pw) {
+//		try {
+//			RestTemplate testRestTemplate = new RestTemplate();
+//
+//			logger.debug("Testing Login & ping to partner {}", partnerLoginURL);
+//
+//			MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
+//			form.add("username", userName);
+//			form.add("password", pw);
+//			ResponseEntity<String> response = testRestTemplate.postForEntity(partnerLoginURL, form, String.class);
+//
+//			assert (response.getStatusCode() == HttpStatus.FOUND);
+//
+//			String cookieSession = response.getHeaders().get("Set-Cookie").get(0).split(";")[0];
+//			logger.debug("Response Code ({}) and body = ({}) ", response.getStatusCode(), response.getBody());
+//			logger.debug("Response =  " + response.getHeaders().toString());
+//			logger.debug("Cookie : " + cookieSession);
+//
+//			Description headers = new Description().message("Cookie").value(cookieSession);
+//
+//			this.cookieSession = cookieSession;
+//
+//			return new ResponseEntity<Description>(headers, HttpStatus.OK);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+//	}
 
-			logger.debug("Testing Login & ping to partner {}", partnerLoginURL);
-
-			MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
-			form.add("username", userName);
-			form.add("password", pw);
-			ResponseEntity<String> response = testRestTemplate.postForEntity(partnerLoginURL, form, String.class);
-
-			assert (response.getStatusCode() == HttpStatus.FOUND);
-
-			String cookieSession = response.getHeaders().get("Set-Cookie").get(0).split(";")[0];
-			logger.debug("Response Code ({}) and body = ({}) ", response.getStatusCode(), response.getBody());
-			logger.debug("Response =  " + response.getHeaders().toString());
-			logger.debug("Cookie : " + cookieSession);
-
-			Description headers = new Description().message("Cookie").value(cookieSession);
-
-			this.cookieSession = cookieSession;
-
-			return new ResponseEntity<Description>(headers, HttpStatus.OK);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-	}
-
-	@Override
-	public ResponseEntity<Object> proxyGet(String URL, String cookieSession) {
-		try {
-			if (cookieSession == null) {
-				cookieSession = this.cookieSession;
-			}
-
-//			MultiValueMap<String, Object> parameters = new LinkedMultiValueMap<String, Object>();
-			HttpHeaders headers = new HttpHeaders();
-//			headers.set("Accept", "*/*");
-			headers.setContentType(MediaType.APPLICATION_JSON);
-			headers.add("Cookie", cookieSession);
-			RestTemplate restTemplate = new RestTemplate();
-			ResponseEntity<Object> response = restTemplate.exchange(URL, HttpMethod.GET,
-					new HttpEntity<Object>(headers), Object.class);
-			return response;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-	}
+//	@Override
+//	public ResponseEntity<Object> proxyGet(String URL, String cookieSession) {
+//		try {
+//			if (cookieSession == null) {
+//				cookieSession = this.cookieSession;
+//			}
+//
+////			MultiValueMap<String, Object> parameters = new LinkedMultiValueMap<String, Object>();
+//			HttpHeaders headers = new HttpHeaders();
+////			headers.set("Accept", "*/*");
+//			headers.setContentType(MediaType.APPLICATION_JSON);
+//			headers.add("Cookie", cookieSession);
+//			RestTemplate restTemplate = new RestTemplate();
+//			ResponseEntity<Object> response = restTemplate.exchange(URL, HttpMethod.GET,
+//					new HttpEntity<Object>(headers), Object.class);
+//			return response;
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+//	}
 
 	// Get All Users
 //	@GetMapping("/users")

@@ -23,8 +23,8 @@ import fr.cea.bigpi.fhe.dmp.helper.Tools;
 import fr.cea.bigpi.fhe.dmp.model.Data;
 import fr.cea.bigpi.fhe.dmp.model.Description;
 import fr.cea.bigpi.fhe.dmp.service.DataService;
-import fr.cea.bigpi.fhe.dmp.service.FHEService;
-import fr.cea.bigpi.fhe.dmp.service.FHESimilarityMatchService;
+import fr.cea.bigpi.fhe.dmp.service.FHEGenericService;
+import fr.cea.bigpi.fhe.dmp.service.FHESimilarityMatchingService;
 import fr.cea.bigpi.fhe.dmp.service.FilesStorageService;
 import io.swagger.annotations.ApiParam;
 
@@ -32,7 +32,7 @@ import io.swagger.annotations.ApiParam;
 public class ControllerImpl implements Controller {
 
 	@Autowired
-	private FHESimilarityMatchService fheSimilaritySearchService;
+	private FHESimilarityMatchingService fheSimilaritySearchService;
 
 	@Autowired
 	DataService dataService;
@@ -44,7 +44,7 @@ public class ControllerImpl implements Controller {
 	Tools tools;
 	
 	@Autowired
-	FHEService fheService;
+	FHEGenericService fheService;
 
 	private static final Logger logger = LoggerFactory.getLogger(ControllerImpl.class);
 
@@ -202,7 +202,7 @@ public class ControllerImpl implements Controller {
 				@RequestParam(name = "partnerID") String partnerID,
 			@ApiParam(name = "contractID", value = "Contract ID", example = "12345", required = true) 
 				@RequestParam(name = "contractID", required = false) String contractID,
-			@ApiParam(name = "dataType", value = "Data Type", example = "12345") 
+			@ApiParam(name = "dataType", value = "Data Type", example = "12345", required = false) 
 				@RequestParam(name = "dataType", required = true) Integer dataType,
 			@ApiParam(name = "status", value = "0,1,2, etc.", example = "", required = false) 
 				@RequestParam(name = "status", required = false) Integer status,
