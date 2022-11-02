@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -39,6 +40,7 @@ import fr.cea.bigpi.fhe.dap.patternsearch.fhe.FHESimilarityMatchingService;
 import fr.cea.bigpi.fhe.dap.patternsearch.helper.Tools;
 import fr.cea.bigpi.fhe.dap.patternsearch.helper.Zip;
 import fr.cea.bigpi.fhe.dap.patternsearch.message.ResponseMessage;
+import fr.cea.bigpi.fhe.dap.patternsearch.model.Attribute;
 import fr.cea.bigpi.fhe.dap.patternsearch.model.Data;
 import fr.cea.bigpi.fhe.dap.patternsearch.model.DataUpdate;
 import fr.cea.bigpi.fhe.dap.patternsearch.model.Description;
@@ -653,10 +655,11 @@ public class ControllerImpl implements Controller {
 //			Path uploadDir = Paths.get(fheSimilarityMatchingService.getfheSimilarityMatchingServiceDir() + "client/upload/");
 			String filename = "temp";
 			fheSimilarityMatchingService.encrypt(content, fheSimilarityMatchingService.getUploadDir(), filename);
-			
+
 			System.out.println("debugg!!!! " + content);
 			MultiValueMap<String, Object> parameters = new LinkedMultiValueMap<String, Object>();
-			parameters.add("file", new FileSystemResource(fheSimilarityMatchingService.getUploadDir() + filename + ".ct"));
+			parameters.add("file",
+					new FileSystemResource(fheSimilarityMatchingService.getUploadDir() + filename + ".ct"));
 			parameters.add("partnerID", partnerID);
 			parameters.add("contractID", contractID);
 			parameters.add("dataType", dataType);
@@ -680,40 +683,41 @@ public class ControllerImpl implements Controller {
 	@Override
 	public ResponseEntity<Description> updateDataSM(@RequestBody(required = true) DataUpdate dataUpdate) {
 //		@RequestParam(name = "drivingLicenseUpdate", required = true) DrivingLicenseUpdate drivingLicenseUpdate) {
-	try {
-		Integer Id = dataUpdate.getData_id();
-		String content = dataUpdate.getContent();
-		dataUpdate.setContent(null);
-		String partnerID = dataUpdate.getPartner_id();
-		String contractID = dataUpdate.getContract_id();
-		Integer dataType = dataUpdate.getDataType();
-		Integer status = dataUpdate.getStatus();
-		String description = dataUpdate.getDescription();
+		try {
+			Integer Id = dataUpdate.getData_id();
+			String content = dataUpdate.getContent();
+			dataUpdate.setContent(null);
+			String partnerID = dataUpdate.getPartner_id();
+			String contractID = dataUpdate.getContract_id();
+			Integer dataType = dataUpdate.getDataType();
+			Integer status = dataUpdate.getStatus();
+			String description = dataUpdate.getDescription();
 
 //		Path uploadDir = Paths.get(.getSealDir() + "client/upload/");
-		String filename = "temp";
-		fheSimilarityMatchingService.encrypt(content, fheSimilarityMatchingService.getUploadDir(), filename);
-		MultiValueMap<String, Object> parameters = new LinkedMultiValueMap<String, Object>();
-		parameters.add("file", new FileSystemResource(fheSimilarityMatchingService.getUploadDir() + filename + ".ct"));
-		parameters.add("Id", Id);
-		parameters.add("partnerID", partnerID);
-		parameters.add("contractID", contractID);
-		parameters.add("dataType", dataType);
-		parameters.add("status", status);
-		parameters.add("description", description);
-		HttpHeaders headers = new HttpHeaders();
-		headers.set("Content-Type", "multipart/form-data");
-		headers.set("Accept", "application/xml, application/json");
-		RestTemplate restTemplate = new RestTemplate();
-		ResponseEntity<Description> result = restTemplate.exchange(
-				fheServerData + "/openapi/v1/crud-data-master/data", HttpMethod.PUT,
-				new HttpEntity<MultiValueMap<String, Object>>(parameters, headers), Description.class);
-		fheSimilarityMatchingService.deleteDir(fheSimilarityMatchingService.getUploadDir() + filename + ".ct");
-		return result;
-	} catch (Exception e) {
-		e.printStackTrace();
-	}
-	return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			String filename = "temp";
+			fheSimilarityMatchingService.encrypt(content, fheSimilarityMatchingService.getUploadDir(), filename);
+			MultiValueMap<String, Object> parameters = new LinkedMultiValueMap<String, Object>();
+			parameters.add("file",
+					new FileSystemResource(fheSimilarityMatchingService.getUploadDir() + filename + ".ct"));
+			parameters.add("Id", Id);
+			parameters.add("partnerID", partnerID);
+			parameters.add("contractID", contractID);
+			parameters.add("dataType", dataType);
+			parameters.add("status", status);
+			parameters.add("description", description);
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("Content-Type", "multipart/form-data");
+			headers.set("Accept", "application/xml, application/json");
+			RestTemplate restTemplate = new RestTemplate();
+			ResponseEntity<Description> result = restTemplate.exchange(
+					fheServerData + "/openapi/v1/crud-data-master/data", HttpMethod.PUT,
+					new HttpEntity<MultiValueMap<String, Object>>(parameters, headers), Description.class);
+			fheSimilarityMatchingService.deleteDir(fheSimilarityMatchingService.getUploadDir() + filename + ".ct");
+			return result;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 	@Override
@@ -735,9 +739,171 @@ public class ControllerImpl implements Controller {
 	}
 
 	@Override
-	public ResponseEntity<String> checkSMContentAuto(String content, String partnerID) {
-		// TODO Auto-generated method stub
-		return null;
+	public @ResponseBody ResponseEntity<byte[]> checkWithEncryptedFileSM(
+			@RequestParam(name = "partnerID", required = true) String partnerID,
+			@RequestParam(name = "requestID", required = true) String requestID,
+			@RequestParam("dataId") String dataId) {
+		try {
+			MultiValueMap<String, Object> parameters = new LinkedMultiValueMap<String, Object>();
+			parameters.add("partnerID", partnerID);
+			parameters.add("requestID", requestID);
+			parameters.add("dataId", dataId);
+			HttpHeaders headers = new HttpHeaders();
+//		headers.set("Content-Type", "multipart/form-data");
+			headers.set("Accept", "text/plain");
+			RestTemplate restTemplate = new RestTemplate();
+			byte[] result = restTemplate.postForObject(
+					fheServerAnalysis + "/openapi/v1/crud-data-master/check/02-checkWithEncryptedFile",
+					new HttpEntity<MultiValueMap<String, Object>>(parameters, headers), byte[].class);
+
+			return new ResponseEntity<byte[]>(result, HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+
+	@Override
+	public ResponseEntity<String> checkSMContentAuto(@RequestParam("content") String content,
+			@RequestParam("partnerID") String partnerID, @RequestParam("dataId") String dataId) {
+		try {
+			// encrypt
+			String filename = "temp";
+			fheSimilarityMatchingService.encrypt(content, fheSimilarityMatchingService.getUploadDir(), filename);
+			Path path = Paths.get(fheSimilarityMatchingService.getUploadDir() + filename + ".ct");
+			// upload
+			MultiValueMap<String, Object> parameters = new LinkedMultiValueMap<String, Object>();
+			parameters.add("file", new FileSystemResource(path.toString()));
+			parameters.add("partnerID", partnerID);
+			parameters.add("dataId", dataId);
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("Content-Type", "multipart/form-data");
+			headers.set("Accept", "text/plain");
+			RestTemplate restTemplate = new RestTemplate();
+			ResponseEntity<String> requestIdResponse = restTemplate.postForEntity(
+					fheServerAnalysis + "/openapi/v1/crud-data-master/check/01-uploadEncryptedFile",
+					new HttpEntity<MultiValueMap<String, Object>>(parameters, headers), String.class);
+			fheSimilarityMatchingService.deleteDir(path.toString());
+			// check
+			if (requestIdResponse.getStatusCode().is2xxSuccessful()) {
+				String requestId = requestIdResponse.getBody();
+				ResponseEntity<byte[]> zipResultResponse = checkWithEncryptedFileSM(partnerID, requestId, dataId);
+				// decrypt
+				if (zipResultResponse.getStatusCode().is2xxSuccessful()) {
+
+					boolean isDirCreated = tools
+							.creatDir(fheSimilarityMatchingService.getResultDir() + "/client_" + requestId);
+					if (isDirCreated) {
+						// Save Zip Result File
+						String zipResultPath = fheSimilarityMatchingService.getResultDir() + "/client_" + requestId
+								+ "/" + requestId + ".zip";
+						Files.write(Paths.get(zipResultPath), zipResultResponse.getBody());
+						// Unzip - start
+						ArrayList<String> extractedFiles = zip.UnzipFile(zipResultPath,
+								fheSimilarityMatchingService.getResultDir() + "/client_" + requestId);
+						// Unzip - end
+
+						String strResult = "";
+						for (int i = 0; i < extractedFiles.size(); i++) {
+							try {
+								strResult = strResult
+										+ fheSimilarityMatchingService.decryptCheckResult(extractedFiles.get(i)).trim();
+								System.out.println("halllooooo : " + strResult);
+							} catch (NumberFormatException ex) {
+								ex.printStackTrace();
+							}
+						}
+						fheSimilarityMatchingService.deleteDir(zipResultPath);
+						return new ResponseEntity<String>(strResult, HttpStatus.OK);
+					} else {
+						throw new Exception("Could not created the directory");
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+
+	@Override
+	public ResponseEntity<String> checkSMAttributesAuto(@RequestParam("partnerID") String partnerID,
+			@RequestParam("dataId") String dataId, @RequestBody List<Attribute> attributes) {
+		try {
+			// encrypt
+			String filename = "temp";
+			String content = attributes2ContentConverter(attributes);
+			fheSimilarityMatchingService.encrypt(content, fheSimilarityMatchingService.getUploadDir(), filename);
+			Path path = Paths.get(fheSimilarityMatchingService.getUploadDir() + filename + ".ct");
+			// upload
+			MultiValueMap<String, Object> parameters = new LinkedMultiValueMap<String, Object>();
+			parameters.add("file", new FileSystemResource(path.toString()));
+			parameters.add("partnerID", partnerID);
+			parameters.add("dataId", dataId);
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("Content-Type", "multipart/form-data");
+			headers.set("Accept", "text/plain");
+			RestTemplate restTemplate = new RestTemplate();
+			ResponseEntity<String> requestIdResponse = restTemplate.postForEntity(
+					fheServerAnalysis + "/openapi/v1/crud-data-master/check/01-uploadEncryptedFile",
+					new HttpEntity<MultiValueMap<String, Object>>(parameters, headers), String.class);
+			fheSimilarityMatchingService.deleteDir(path.toString());
+			// check
+			if (requestIdResponse.getStatusCode().is2xxSuccessful()) {
+				String requestId = requestIdResponse.getBody();
+				ResponseEntity<byte[]> zipResultResponse = checkWithEncryptedFileSM(partnerID, requestId, dataId);
+				// decrypt
+				if (zipResultResponse.getStatusCode().is2xxSuccessful()) {
+
+					boolean isDirCreated = tools
+							.creatDir(fheSimilarityMatchingService.getResultDir() + "/client_" + requestId);
+					if (isDirCreated) {
+						// Save Zip Result File
+						String zipResultPath = fheSimilarityMatchingService.getResultDir() + "/client_" + requestId
+								+ "/" + requestId + ".zip";
+						Files.write(Paths.get(zipResultPath), zipResultResponse.getBody());
+						// Unzip - start
+						ArrayList<String> extractedFiles = zip.UnzipFile(zipResultPath,
+								fheSimilarityMatchingService.getResultDir() + "/client_" + requestId);
+						// Unzip - end
+
+						String strResult = "";
+						for (int i = 0; i < extractedFiles.size(); i++) {
+							try {
+								strResult = strResult
+										+ fheSimilarityMatchingService.decryptCheckResult(extractedFiles.get(i)).trim();
+								System.out.println("halllooooo : " + strResult);
+							} catch (NumberFormatException ex) {
+								ex.printStackTrace();
+							}
+						}
+						fheSimilarityMatchingService.deleteDir(zipResultPath);
+						return new ResponseEntity<String>(strResult, HttpStatus.OK);
+					} else {
+						throw new Exception("Could not created the directory");
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+
+	public String attributes2ContentConverter(List<Attribute> attributes) {
+		attributes.sort(Comparator.comparing(a -> a.getIndex()));
+		String content = "";
+		for (int i = 0; i < attributes.size(); i++) {
+			System.out.println(attributes.get(i).getIndex());
+			content = content + attributes.get(i).getValue() + " ";
+		}
+		
+		if (content != null && content.length() > 0) {
+			content = content.substring(0, content.length() - 1);
+		}
+
+		System.out.println(content);
+		return content;
 	}
 
 //	@Override

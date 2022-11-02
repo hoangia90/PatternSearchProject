@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 //import org.springframework.web.bind.annotation.CrossOrigin;
 
+import fr.cea.bigpi.fhe.dap.patternsearch.model.Attribute;
+
 //import com.fasterxml.jackson.core.JsonProcessingException;
 
 import fr.cea.bigpi.fhe.dap.patternsearch.model.Data;
@@ -43,7 +45,7 @@ public interface Controller {
 			@ApiResponse(code = 500, message = "Error for HTTPS call trustAnchors", response = String.class) })
 	@PostMapping("/client/hash/data")
 	@ApiOperation(value = "Create An Encrypted File In The Database", notes = "This method encrypts a given information into an encrypted file and then stores it into the database", tags = {
-			"DeepLab - Analysis", })
+			"DeepLab - CRUD", })
 	public ResponseEntity<Description> createHashData(
 			@ApiParam(name = "content", value = "Any Character", example = "") @RequestParam(name = "content", required = true) String content,
 			@ApiParam(name = "partnerID", value = "", example = "") @RequestParam(name = "partnerID", required = true) String partnerID,
@@ -59,7 +61,7 @@ public interface Controller {
 			@ApiResponse(code = 500, message = "Error for HTTPS call trustAnchors", response = String.class) })
 	@PutMapping("/client/hash/data")
 	@ApiOperation(value = "Update An Encrypted File In The Database", notes = "This method updates the information of an encrypted file in the database", tags = {
-			"DeepLab - Analysis", })
+			"DeepLab - CRUD", })
 	public ResponseEntity<Description> updateHashData(
 			@ApiParam(name = "dataUpdate", value = "", example = "", required = true) @RequestBody DataUpdate dataUpdate);
 
@@ -70,7 +72,7 @@ public interface Controller {
 			@ApiResponse(code = 500, message = "Error for HTTPS call trustAnchors", response = String.class) })
 	@DeleteMapping("/client/hash/data")
 	@ApiOperation(value = "Delete An Encrypted File In The Database", notes = "Delete an encrypted file in the database", tags = {
-			"DeepLab - Analysis", })
+			"DeepLab - CRUD", })
 	public ResponseEntity<Description> deleteHashData(
 			@ApiParam(name = "id", value = "", example = "", required = true) @RequestParam(name = "id", required = true) Integer id,
 			@ApiParam(name = "partnerId", value = "", example = "", required = true) @RequestParam(name = "partnerId", required = true) String partnerId);
@@ -304,12 +306,40 @@ public interface Controller {
 			@ApiResponse(code = 401, message = "Unauthorized", response = String.class),
 			@ApiResponse(code = 404, message = "Not found", response = String.class),
 			@ApiResponse(code = 500, message = "Error for HTTPS call trustAnchors", response = String.class) })
-	@PostMapping("/client/sm/checkHashContent-Auto")
+	@PostMapping("/client/sm/checkContent-Auto")
 	@ApiOperation(value = "Check Content In Database Automatically", notes = "This method checks if an uploaded encrypted file's information is in database", tags = {
-			"DeepLab - Analysis", })
+			"Similarity Matching - Analysis", })
 	public ResponseEntity<String> checkSMContentAuto(
 			@ApiParam(name = "content", value = "Any Character", example = "", required = true) @RequestParam("content") String content,
-			@ApiParam(name = "partnerID", value = "", example = "", required = true) @RequestParam("partnerID") String partnerID);
+			@ApiParam(name = "partnerID", value = "", example = "", required = true) @RequestParam("partnerID") String partnerID,
+			@ApiParam(name = "dataId", value = "", example = "", required = true) @RequestParam("dataId") String dataId);
+	
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Server response", response = String.class),
+			@ApiResponse(code = 400, message = "Bad request", response = String.class),
+			@ApiResponse(code = 401, message = "Unauthorized", response = String.class),
+			@ApiResponse(code = 404, message = "Not found", response = String.class),
+			@ApiResponse(code = 500, message = "Error for HTTPS call trustAnchors", response = String.class) })
+	@PostMapping("/client/sm/checkAttributes-Auto")
+	@ApiOperation(value = "Check Content In Database Automatically", notes = "This method checks if an uploaded encrypted file's information is in database", tags = {
+			"Similarity Matching - Analysis", })
+	public ResponseEntity<String> checkSMAttributesAuto(
+			@ApiParam(name = "partnerID", value = "", example = "", required = true) @RequestParam("partnerID") String partnerID,
+			@ApiParam(name = "dataId", value = "", example = "", required = true) @RequestParam("dataId") String dataId,
+			@ApiParam(name = "attributes", value = "", example = "", required = true) @RequestBody List<Attribute> attributes
+			);
+	
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Server response", response = String.class),
+			@ApiResponse(code = 400, message = "Bad request", response = String.class),
+			@ApiResponse(code = 401, message = "Unauthorized", response = String.class),
+			@ApiResponse(code = 404, message = "Not found", response = String.class),
+			@ApiResponse(code = 500, message = "Error for HTTPS call trustAnchors", response = String.class) })
+	@GetMapping("/client/sm/03-check")
+	@ApiOperation(value = "Check If The Uploaded Encrypted File's Information Is In Database", notes = "This method checks if an uploaded encrypted's information is stored in database and returns an encrypted .ct file result. The file result is decrypted with 04-decryptCheckedResult. Note that: the requestID is used in this method generated from the 02-upload method", tags = {
+			"Similarity Matching - Analysis", })
+	public @ResponseBody ResponseEntity<byte[]> checkWithEncryptedFileSM(
+			@ApiParam(name = "partnerID", value = "", example = "", required = true) @RequestParam("partnerID") String partnerID,
+			@ApiParam(name = "requestID", value = "", example = "", required = true) @RequestParam("requestID") String requestID,
+			@ApiParam(name = "dataId", value = "", example = "", required = true) @RequestParam("dataId") String dataId);
 	
 	//-------------------------------------------------------- Used for Similarity Matching - End --------------------------------------------------------
 	//----------------------------------------------------------------------------------------------------------------------------------------------------

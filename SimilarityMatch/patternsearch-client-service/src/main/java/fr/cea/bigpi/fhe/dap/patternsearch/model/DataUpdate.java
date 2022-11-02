@@ -1,6 +1,6 @@
 package fr.cea.bigpi.fhe.dap.patternsearch.model;
 
-import io.swagger.annotations.ApiModelProperty;
+//import io.swagger.annotations.ApiModelProperty;
 
 public class DataUpdate implements java.io.Serializable {
 	/**
