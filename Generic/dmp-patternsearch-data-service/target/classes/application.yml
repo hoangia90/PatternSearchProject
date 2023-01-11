@@ -67,8 +67,10 @@ logging.level.org.hibernate.type.descriptor.sql.BasicBinder: TRACE
 #     keyDir: ${application.seal.sealDir}/keys/
 application:
    seal:
-#     sealDir: /home/hgnguyen/Desktop/seal
-     sealDir: /etc/seal/
+#    For Docker Only - Begin
+#     sealDir: /etc/PatternSearch/
+#    For Docker Only - End
+     sealDir: /home/hgnguyen/Desktop/seal/PatternSearch/
      dataDir: ${application.seal.sealDir}/data/
      resultDir: ${application.seal.sealDir}/result/
      keyDir: ${application.seal.sealDir}/keys/

@@ -9,21 +9,26 @@ services:
     depends_on:
       - db
     environment:
+#      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5555/patternSearchdb
+#      - SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5555/patternSearchdb
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/patternSearchdb
-      # - SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5432/patternSearchdb
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=123
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      
     expose:
       - 9090
     ports:
       - 9090:9090
+    volumes:
+      - /home/hgnguyen/Desktop/seal/PatternSearch/:/etc/PatternSearch/
           
   db:
     image: 'postgres:13.1-alpine'
+    restart: always
     container_name: db
     ports:
-      - '5432:5432'
+      - 5555:5432
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=123

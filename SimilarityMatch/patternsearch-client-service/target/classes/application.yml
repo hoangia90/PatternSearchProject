@@ -24,7 +24,7 @@ management:
    security:
       enabled: false
         
-spring:  
+spring: 
    datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/patternSearchdb
@@ -54,29 +54,29 @@ application:
     sk: super1man2with3zero3power4
 
    seal:
-     sealDir: /home/hgnguyen/Desktop/seal/SimilarityMatch
-     dataDir: ${application.seal.sealDir}/data/
-     resultDir: ${application.seal.sealDir}/result/
-     keyDir: ${application.seal.sealDir}/keys/
-     uploadDir: ${application.seal.sealDir}/upload/
-     sample: 40
-     filename: l
-     encryptPath: ${application.seal.sealDir}/similarityMatch_encrypt
-     decryptPath: ${application.seal.sealDir}/similarityMatch_decrypt
-     decrypCheckedResulttPath: ${application.seal.sealDir}/similarityMatch_decrypt_1st_result
-     evaluatePath: ${application.seal.sealDir}/similarityMatch_evaluate
-     
 #     sealDir: /home/hgnguyen/Desktop/seal/SimilarityMatch
 #     dataDir: ${application.seal.sealDir}/data/
 #     resultDir: ${application.seal.sealDir}/result/
-#     uploadDir: ${application.seal.sealDir}/upload/
 #     keyDir: ${application.seal.sealDir}/keys/
+#     uploadDir: ${application.seal.sealDir}/upload/
 #     sample: 40
 #     filename: l
-#     encryptPath: ${application.seal.sealDir}/patternSearch_encrypt_v2
-#     decryptPath: ${application.seal.sealDir}/patternSearch_decrypt_v2
-#     decrypCheckedResulttPath: ${application.seal.sealDir}/patternSearch_decrypt_result_v2
-#     evaluatePath: ${application.seal.sealDir}/patternSearch_evaluate_v2
+#     encryptPath: ${application.seal.sealDir}/similarityMatch_encrypt
+#     decryptPath: ${application.seal.sealDir}/similarityMatch_decrypt
+#     decrypCheckedResulttPath: ${application.seal.sealDir}/similarityMatch_decrypt_1st_result
+#     evaluatePath: ${application.seal.sealDir}/similarityMatch_evaluate
+     
+     sealDir: /home/hgnguyen/Desktop/seal/patternSearch
+     dataDir: ${application.seal.sealDir}/data/
+     resultDir: ${application.seal.sealDir}/result/
+     uploadDir: ${application.seal.sealDir}/upload/
+     keyDir: ${application.seal.sealDir}/keys/
+     sample: 40
+     filename: l
+     encryptPath: ${application.seal.sealDir}/patternSearch_encrypt_v2
+     decryptPath: ${application.seal.sealDir}/patternSearch_decrypt_v2
+     decrypCheckedResulttPath: ${application.seal.sealDir}/patternSearch_decrypt_result_v2
+     evaluatePath: ${application.seal.sealDir}/patternSearch_evaluate_v2
    
 
    fheServerData: http://localhost:9090

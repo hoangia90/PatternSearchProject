@@ -89,7 +89,7 @@ public class ControllerImpl implements Controller {
 	Tools tools;
 
 	// Used for DeepLab Demo - Begin
-	@Override
+//	@Override
 	public ResponseEntity<Description> createHashData(@RequestParam(name = "content", required = true) String content,
 			@RequestParam(name = "partnerID", required = true) String partnerID,
 			@RequestParam(name = "contractID", required = false) String contractID,
@@ -127,7 +127,7 @@ public class ControllerImpl implements Controller {
 		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
-	@Override
+//	@Override
 	public ResponseEntity<Description> updateHashData(@RequestBody(required = true) DataUpdate dataUpdate) {
 		try {
 			Integer Id = dataUpdate.getData_id();
@@ -168,13 +168,13 @@ public class ControllerImpl implements Controller {
 		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
-	@Override
+//	@Override
 	public ResponseEntity<Description> deleteHashData(@RequestParam(name = "id", required = true) Integer id,
 			@RequestParam(name = "partnerId", required = true) String partnerId) {
 		return deleteData(id, partnerId);
 	}
 
-	@Override
+//	@Override
 	public @ResponseBody ResponseEntity<String> checkHashContentAuto(@RequestParam("content") String content,
 			@RequestParam("partnerID") String partnerID) {
 		try {
@@ -217,7 +217,7 @@ public class ControllerImpl implements Controller {
 		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
-	@Override
+//	@Override
 	public ResponseEntity<String> uploadCSVFunctionFile(@RequestParam("file") MultipartFile file,
 			@RequestParam(name = "partnerID", required = true) String partnerID,
 			@RequestParam(name = "contractID", required = false) String contractID,
@@ -290,7 +290,7 @@ public class ControllerImpl implements Controller {
 		}
 	}
 
-	@Override
+//	@Override
 	public @ResponseBody ResponseEntity<Boolean> checkContentAuto(@RequestParam("content") String content,
 			@RequestParam("partnerID") String partnerID) {
 		try {
@@ -367,7 +367,7 @@ public class ControllerImpl implements Controller {
 		return destFile;
 	}
 
-	@Override
+//	@Override
 	public @ResponseBody ResponseEntity<byte[]> encrypt(
 			@RequestParam(name = "content", required = true) String content) {
 		try {
@@ -385,7 +385,7 @@ public class ControllerImpl implements Controller {
 		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
-	@Override
+//	@Override
 	public @ResponseBody ResponseEntity<String> uploadEncryptedFile(
 			@RequestParam(name = "file", required = true) MultipartFile file,
 			@RequestParam(name = "partnerID", required = true) String partnerID) {
@@ -419,7 +419,7 @@ public class ControllerImpl implements Controller {
 		return new ResponseEntity<String>("Could not upload the file!", HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
-	@Override
+//	@Override
 	public @ResponseBody ResponseEntity<byte[]> checkWithEncryptedFile(
 			@RequestParam(name = "partnerID", required = true) String partnerID,
 			@RequestParam(name = "requestID", required = true) String requestID) {
@@ -442,7 +442,7 @@ public class ControllerImpl implements Controller {
 		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
-	@Override
+//	@Override
 	public ResponseEntity<String> decryptCheckResult(@RequestParam(name = "file", required = true) MultipartFile file) {
 		try {
 			ResponseEntity<ResponseMessage> re = uploadFile(file);
@@ -458,7 +458,7 @@ public class ControllerImpl implements Controller {
 		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
-	@Override
+//	@Override
 	public ResponseEntity<String> decryptData(@RequestParam(name = "file", required = true) MultipartFile file) {
 		try {
 			uploadFile(file);
@@ -474,7 +474,7 @@ public class ControllerImpl implements Controller {
 		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
-	@Override
+//	@Override
 	public ResponseEntity<byte[]> downloadEncryptedFile(
 			@ApiParam(name = "Id", value = "", example = "", required = true) @RequestParam(name = "Id") Integer Id,
 			@ApiParam(name = "partnerID", value = "", example = "", required = true) @RequestParam("partnerID") String partnerID) {
@@ -495,7 +495,7 @@ public class ControllerImpl implements Controller {
 		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
-	@Override
+//	@Override
 	public ResponseEntity<List<Data>> getAllData(@RequestParam(name = "partnerID", required = true) String partnerID) {
 		try {
 			MultiValueMap<String, Object> parameters = new LinkedMultiValueMap<String, Object>();
@@ -514,7 +514,7 @@ public class ControllerImpl implements Controller {
 		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
-	@Override
+//	@Override
 	public ResponseEntity<Description> createData(@RequestParam(name = "content", required = true) String content,
 			@RequestParam(name = "partnerID", required = true) String partnerID,
 			@RequestParam(name = "contractID", required = false) String contractID,
@@ -547,7 +547,7 @@ public class ControllerImpl implements Controller {
 		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
-	@Override
+//	@Override
 	public ResponseEntity<Description> updateData(@RequestBody(required = true) DataUpdate dataUpdate) {
 //			@RequestParam(name = "drivingLicenseUpdate", required = true) DrivingLicenseUpdate drivingLicenseUpdate) {
 		try {
@@ -584,7 +584,7 @@ public class ControllerImpl implements Controller {
 		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
-	@Override
+//	@Override
 	public ResponseEntity<Description> deleteData(@RequestParam(name = "id", required = true) Integer id,
 			@RequestParam(name = "partnerId", required = true) String partnerId) {
 		try {
@@ -602,7 +602,7 @@ public class ControllerImpl implements Controller {
 		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
-	@Override
+//	@Override
 	public ResponseEntity<ArrayList<Integer>> createDataSet(
 			@RequestParam(name = "content", required = true) String content,
 			@RequestParam(name = "partnerID", required = true) String partnerID,
@@ -737,9 +737,34 @@ public class ControllerImpl implements Controller {
 		}
 		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 	}
+	
+	@Override
+	public @ResponseBody ResponseEntity<byte[]> checkWithEncryptedFilePathSM(
+			@RequestParam(name = "partnerID", required = true) String partnerID,
+			@RequestParam(name = "requestID", required = true) String requestID,
+			@RequestParam("dataPath") String dataPath) {
+		try {
+			MultiValueMap<String, Object> parameters = new LinkedMultiValueMap<String, Object>();
+			parameters.add("partnerID", partnerID);
+			parameters.add("requestID", requestID);
+			parameters.add("dataPath", dataPath);
+			HttpHeaders headers = new HttpHeaders();
+//		headers.set("Content-Type", "multipart/form-data");
+			headers.set("Accept", "text/plain");
+			RestTemplate restTemplate = new RestTemplate();
+			byte[] result = restTemplate.postForObject(
+					fheServerAnalysis + "/openapi/v1/crud-data-master/check/02-checkWithEncryptedFilePath",
+					new HttpEntity<MultiValueMap<String, Object>>(parameters, headers), byte[].class);
+
+			return new ResponseEntity<byte[]>(result, HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+	}
 
 	@Override
-	public @ResponseBody ResponseEntity<byte[]> checkWithEncryptedFileSM(
+	public @ResponseBody ResponseEntity<byte[]> checkWithEncryptedFileIdSM(
 			@RequestParam(name = "partnerID", required = true) String partnerID,
 			@RequestParam(name = "requestID", required = true) String requestID,
 			@RequestParam("dataId") String dataId) {
@@ -762,10 +787,10 @@ public class ControllerImpl implements Controller {
 		}
 		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 	}
-
+	
 	@Override
-	public ResponseEntity<String> checkSMContentAuto(@RequestParam("content") String content,
-			@RequestParam("partnerID") String partnerID, @RequestParam("dataId") String dataId) {
+	public ResponseEntity<String> checkSMContentAuto2(@RequestParam("content") String content,
+			@RequestParam("partnerID") String partnerID, @RequestParam("dataPath") String dataPath) {
 		try {
 			// encrypt
 			String filename = "temp";
@@ -775,7 +800,7 @@ public class ControllerImpl implements Controller {
 			MultiValueMap<String, Object> parameters = new LinkedMultiValueMap<String, Object>();
 			parameters.add("file", new FileSystemResource(path.toString()));
 			parameters.add("partnerID", partnerID);
-			parameters.add("dataId", dataId);
+			parameters.add("dataId", dataPath);
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("Content-Type", "multipart/form-data");
 			headers.set("Accept", "text/plain");
@@ -787,7 +812,7 @@ public class ControllerImpl implements Controller {
 			// check
 			if (requestIdResponse.getStatusCode().is2xxSuccessful()) {
 				String requestId = requestIdResponse.getBody();
-				ResponseEntity<byte[]> zipResultResponse = checkWithEncryptedFileSM(partnerID, requestId, dataId);
+				ResponseEntity<byte[]> zipResultResponse = checkWithEncryptedFilePathSM(partnerID, requestId, dataPath);
 				// decrypt
 				if (zipResultResponse.getStatusCode().is2xxSuccessful()) {
 
@@ -827,11 +852,140 @@ public class ControllerImpl implements Controller {
 	}
 
 	@Override
-	public ResponseEntity<String> checkSMAttributesAuto(@RequestParam("partnerID") String partnerID,
+	public ResponseEntity<String> checkSMContentAuto(@RequestParam("content") String content,
+			@RequestParam("partnerID") String partnerID, @RequestParam("dataId") String dataId) {
+		try {
+			// encrypt
+			String filename = "temp";
+			fheSimilarityMatchingService.encrypt(content, fheSimilarityMatchingService.getUploadDir(), filename);
+			Path path = Paths.get(fheSimilarityMatchingService.getUploadDir() + filename + ".ct");
+			// upload
+			MultiValueMap<String, Object> parameters = new LinkedMultiValueMap<String, Object>();
+			parameters.add("file", new FileSystemResource(path.toString()));
+			parameters.add("partnerID", partnerID);
+			parameters.add("dataId", dataId);
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("Content-Type", "multipart/form-data");
+			headers.set("Accept", "text/plain");
+			RestTemplate restTemplate = new RestTemplate();
+			ResponseEntity<String> requestIdResponse = restTemplate.postForEntity(
+					fheServerAnalysis + "/openapi/v1/crud-data-master/check/01-uploadEncryptedFile",
+					new HttpEntity<MultiValueMap<String, Object>>(parameters, headers), String.class);
+			fheSimilarityMatchingService.deleteDir(path.toString());
+			// check
+			if (requestIdResponse.getStatusCode().is2xxSuccessful()) {
+				String requestId = requestIdResponse.getBody();
+				ResponseEntity<byte[]> zipResultResponse = checkWithEncryptedFileIdSM(partnerID, requestId, dataId);
+				// decrypt
+				if (zipResultResponse.getStatusCode().is2xxSuccessful()) {
+
+					boolean isDirCreated = tools
+							.creatDir(fheSimilarityMatchingService.getResultDir() + "/client_" + requestId);
+					if (isDirCreated) {
+						// Save Zip Result File
+						String zipResultPath = fheSimilarityMatchingService.getResultDir() + "/client_" + requestId
+								+ "/" + requestId + ".zip";
+						Files.write(Paths.get(zipResultPath), zipResultResponse.getBody());
+						// Unzip - start
+						ArrayList<String> extractedFiles = zip.UnzipFile(zipResultPath,
+								fheSimilarityMatchingService.getResultDir() + "/client_" + requestId);
+						// Unzip - end
+
+						String strResult = "";
+						for (int i = 0; i < extractedFiles.size(); i++) {
+							try {
+								strResult = strResult
+										+ fheSimilarityMatchingService.decryptCheckResult(extractedFiles.get(i)).trim();
+								System.out.println("halllooooo : " + strResult);
+							} catch (NumberFormatException ex) {
+								ex.printStackTrace();
+							}
+						}
+						fheSimilarityMatchingService.deleteDir(zipResultPath);
+						return new ResponseEntity<String>(strResult, HttpStatus.OK);
+					} else {
+						throw new Exception("Could not created the directory");
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+
+	@Override
+	public ResponseEntity<String> checkMatchedPercentage2(@RequestParam("partnerID") String partnerID,
+			@RequestParam("dataPath") String dataPath, @RequestBody List<Attribute> attributes) {
+		try {
+			// encrypt
+			String filename = "temp";
+			// Get only 40 items here !!!!!
+			String content = attributes2ContentConverter(attributes);
+			fheSimilarityMatchingService.encrypt(content, fheSimilarityMatchingService.getUploadDir(), filename);
+			Path path = Paths.get(fheSimilarityMatchingService.getUploadDir() + filename + ".ct");
+			// upload
+			MultiValueMap<String, Object> parameters = new LinkedMultiValueMap<String, Object>();
+			parameters.add("file", new FileSystemResource(path.toString()));
+			parameters.add("partnerID", partnerID);
+			parameters.add("dataPath", dataPath);
+			HttpHeaders headers = new HttpHeaders();
+			headers.set("Content-Type", "multipart/form-data");
+			headers.set("Accept", "text/plain");
+			RestTemplate restTemplate = new RestTemplate();
+			ResponseEntity<String> requestIdResponse = restTemplate.postForEntity(
+					fheServerAnalysis + "/openapi/v1/crud-data-master/check/01-uploadEncryptedFile",
+					new HttpEntity<MultiValueMap<String, Object>>(parameters, headers), String.class);
+			fheSimilarityMatchingService.deleteDir(path.toString());
+			// check
+			if (requestIdResponse.getStatusCode().is2xxSuccessful()) {
+				String requestId = requestIdResponse.getBody();
+				ResponseEntity<byte[]> zipResultResponse = checkWithEncryptedFilePathSM(partnerID, requestId, dataPath);
+				// decrypt
+				if (zipResultResponse.getStatusCode().is2xxSuccessful()) {
+
+					boolean isDirCreated = tools
+							.creatDir(fheSimilarityMatchingService.getResultDir() + "/client_" + requestId);
+					if (isDirCreated) {
+						// Save Zip Result File
+						String zipResultPath = fheSimilarityMatchingService.getResultDir() + "/client_" + requestId
+								+ "/" + requestId + ".zip";
+						Files.write(Paths.get(zipResultPath), zipResultResponse.getBody());
+						// Unzip - start
+						ArrayList<String> extractedFiles = zip.UnzipFile(zipResultPath,
+								fheSimilarityMatchingService.getResultDir() + "/client_" + requestId);
+						// Unzip - end
+
+						String strResult = "";
+						for (int i = 0; i < extractedFiles.size(); i++) {
+							try {
+								strResult = strResult
+										+ fheSimilarityMatchingService.decryptCheckResult(extractedFiles.get(i)).trim();
+								System.out.println("halllooooo : " + strResult);
+							} catch (NumberFormatException ex) {
+								ex.printStackTrace();
+							}
+						}
+						fheSimilarityMatchingService.deleteDir(zipResultPath);
+						return new ResponseEntity<String>(strResult, HttpStatus.OK);
+					} else {
+						throw new Exception("Could not created the directory");
+					}
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+
+	@Override
+	public ResponseEntity<String> checkMatchedPercentage(@RequestParam("partnerID") String partnerID,
 			@RequestParam("dataId") String dataId, @RequestBody List<Attribute> attributes) {
 		try {
 			// encrypt
 			String filename = "temp";
+			// Get only 40 items here !!!!!
 			String content = attributes2ContentConverter(attributes);
 			fheSimilarityMatchingService.encrypt(content, fheSimilarityMatchingService.getUploadDir(), filename);
 			Path path = Paths.get(fheSimilarityMatchingService.getUploadDir() + filename + ".ct");
@@ -851,7 +1005,7 @@ public class ControllerImpl implements Controller {
 			// check
 			if (requestIdResponse.getStatusCode().is2xxSuccessful()) {
 				String requestId = requestIdResponse.getBody();
-				ResponseEntity<byte[]> zipResultResponse = checkWithEncryptedFileSM(partnerID, requestId, dataId);
+				ResponseEntity<byte[]> zipResultResponse = checkWithEncryptedFileIdSM(partnerID, requestId, dataId);
 				// decrypt
 				if (zipResultResponse.getStatusCode().is2xxSuccessful()) {
 
@@ -897,7 +1051,7 @@ public class ControllerImpl implements Controller {
 			System.out.println(attributes.get(i).getIndex());
 			content = content + attributes.get(i).getValue() + " ";
 		}
-		
+
 		if (content != null && content.length() > 0) {
 			content = content.substring(0, content.length() - 1);
 		}

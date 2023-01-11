@@ -3,22 +3,23 @@ package fr.cea.bigpi.fhe.dap.patternsearch;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import javax.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 //import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 //import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.cloud.client.circuitbreaker.EnableCircuitBreaker;
 //import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 //import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.cloud.sleuth.sampler.*;
 import org.springframework.context.annotation.Bean;
-import org.springframework.web.client.RestTemplate;
-
+//import org.springframework.web.client.RestTemplate;
 //import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 //import com.fasterxml.jackson.annotation.PropertyAccessor;
@@ -43,6 +44,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 //@EnableDiscoveryClient
 //@EnableAutoConfiguration(exclude={DataSourceAutoConfiguration.class})
+@EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class, HibernateJpaAutoConfiguration.class})
 //@EnableFeignClients(clients = { AccountClient.class })
 @SpringBootApplication
 @EnableSwagger2

@@ -87,6 +87,70 @@ public class ControllerImpl implements Controller {
 	}
 
 	@Override
+	public ResponseEntity<byte[]> checkWithEncryptedFilePath(
+			@ApiParam(name = "partnerID", value = "", example = "", required = true) @RequestParam("partnerID") String partnerID,
+			@ApiParam(name = "requestID", value = "", example = "", required = true) @RequestParam("requestID") String requestID,
+			@ApiParam(name = "dataPath", value = "", example = "", required = true) @RequestParam("dataPath") String dataPath) {
+		int vectorSize = 102;
+		// clean result
+		fheSimilarityMatchService.deleteDir(fheSimilarityMatchService.getResultDir() + "requestID" + ".ct");
+		//
+		List<Data> allData = dataService.getAllData();
+		ArrayList<String> data = new ArrayList<String>();
+		for (Data datum : allData) {
+			if (datum.getPartnerId().equals(partnerID)) {
+//				if (datum.getDataId().toString().equals(dataPath)) {
+//					System.out.println("debuggg!!!!" + datum.getContent() + datum.getDataId() + ".ct");
+//					data.add(datum.getContent() + fhePatternSearchService.getFilename() + ".ct");
+//					data.add(datum.getContent() + datum.getDataId() + ".ct");
+					data.add(dataPath);
+//				}
+			}
+		}
+		//
+		try {
+			if (!data.isEmpty()) {
+				List<List<String>> parts = chopped(data, vectorSize);
+				String fileName = requestID + ".ct";
+				String encryptedFilePath = storageService.getFileDir() + "/" + fileName;
+
+				String[] resultPaths = new String[parts.size()];
+				for (int i = 0; i < parts.size(); i++) {
+					try {
+						String outputPath = requestID + "." + (i + 1) + "." + parts.size();
+						System.out.println(outputPath);
+						fheSimilarityMatchService.checkData(encryptedFilePath, (ArrayList<String>) parts.get(i),
+								outputPath);
+						resultPaths[i] = fheSimilarityMatchService.getResultDir() + "/" + outputPath + ".ct";
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				;
+				// Zip result files - start
+				boolean isDirCreated = tools.creatDir(fheSimilarityMatchService.getResultDir() + "/" + requestID);
+//			if (isDirCreated) {
+
+				String zipResultPath = zip.zipMultipleFiles(fheSimilarityMatchService.getResultDir() + "/" + requestID,
+						requestID, resultPaths);
+				// Zip result files - end
+				for (int i = 0; i < resultPaths.length; i++) {
+					fheSimilarityMatchService.deleteDir(resultPaths[i]);
+				}
+				Path path = Paths.get(zipResultPath);
+				byte[] returnData = Files.readAllBytes(path);
+				return new ResponseEntity<byte[]>(returnData, HttpStatus.OK);
+			} else {
+				throw new Exception("Could not created the result");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+
+	@Override
 	public ResponseEntity<byte[]> checkWithEncryptedFile(
 			@ApiParam(name = "partnerID", value = "", example = "", required = true) @RequestParam("partnerID") String partnerID,
 			@ApiParam(name = "requestID", value = "", example = "", required = true) @RequestParam("requestID") String requestID,

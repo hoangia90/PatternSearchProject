@@ -24,12 +24,13 @@ management:
    security:
       enabled: false
         
-spring:  
-   datasource:
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/patternSearchdb
-    username: postgres
-    password: 123 
+#spring:  
+#   datasource:
+#    driver-class-name: org.postgresql.Driver
+#    url: jdbc:postgresql://localhost:5432/patternSearchdb
+#    username: postgres
+#    password: 123 
+
 #   datasource:
 #      url: jdbc:postgresql://10.8.34.73:5432/PatternSearch
 #      username: postgres
@@ -54,7 +55,10 @@ application:
     sk: super1man2with3zero3power4
 
    seal:
-     sealDir: /home/hgnguyen/Desktop/seal
+#    For Docker Only - Begin
+#     sealDir: /etc/PatternSearch/
+#    For Docker Only - End
+     sealDir: /home/hgnguyen/Desktop/seal/PatternSearch/
      dataDir: ${application.seal.sealDir}/data/
      resultDir: ${application.seal.sealDir}/result/
      uploadDir: ${application.seal.sealDir}/upload/
@@ -66,9 +70,12 @@ application:
      decrypCheckedResulttPath: ${application.seal.sealDir}/patternSearch_decrypt_result_v2
      evaluatePath: ${application.seal.sealDir}/patternSearch_evaluate_v2
    
-
+#   fheServerData: http://app1:9090
+#   fheServerAnalysis: http://app2:9191
    fheServerData: http://localhost:9090
    fheServerAnalysis: http://localhost:9191
+#   fheServerData: http://172.18.0.4:9090
+#   fheServerAnalysis: http://172.18.0.3:9191
 #   fheServerData: http://10.8.34.73:9090
 #   fheServerAnalysis: http://10.8.34.73:9191
 

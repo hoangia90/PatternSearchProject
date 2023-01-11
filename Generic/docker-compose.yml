@@ -1,0 +1,118 @@
+version: '2'
+
+services:
+  app1:
+    image: 'dmp-patternsearch-data-service:latest'
+    restart: always
+    build:
+      context: ./dmp-patternsearch-data-service
+    container_name: dmp-patternsearch-data-service
+    # depends_on:
+    #   - db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/patternSearchdb
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=123
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - APP_PORT=9090
+      - APP_NAME=app1
+    expose:
+      - 9090
+    ports:
+      - 9090:9090
+    volumes:
+      - /home/hgnguyen/Desktop/seal/PatternSearch/:/etc/PatternSearch/
+    networks:
+      - default
+    #   - app1-db
+    # # #   - app1-app2
+    #   - app3-app1
+    depends_on:
+      - db
+  
+  app2:
+    image: 'dap-patternsearch-analysis-service:latest'
+    restart: always
+    build:
+      context: ./dap-patternsearch-checker-service
+    container_name: dap-patternsearch-analysis-service
+    # depends_on:
+    #   - db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/patternSearchdb
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=123
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - APP_PORT=9191
+      - APP_NAME=app2
+    expose:
+      - 9191
+    ports:
+      - 9191:9191
+    volumes:
+      - /home/hgnguyen/Desktop/seal/PatternSearch/:/etc/PatternSearch/
+    networks:
+      - default
+    #   # - app2-db
+    #   - app2-app1
+    #   # - app2-app3
+    depends_on:
+      - db
+      # - app1
+      # - app3
+
+  app3:
+    image: 'dap-patternsearch-client-service:latest'
+    restart: always
+    build:
+      context: ./patternsearch-client-service
+    container_name: dap-patternsearch-client-service
+    # depends_on:
+    #   - db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/patternSearchdb
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=123
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - APP_PORT=9292
+      - APP_NAME=app3
+    expose:
+      - 9292
+    ports:
+      - 9292:9292
+    volumes:
+      - /home/hgnguyen/Desktop/seal/PatternSearch/:/etc/PatternSearch/
+    networks:
+      - default
+    #   - app3-app1
+    # #   # - app3-app2
+    # depends_on:
+    #   - app1
+    #   - app2
+          
+  db:
+    image: 'postgres:13.1-alpine'
+    restart: always
+    container_name: db
+    ports:
+      - 5555:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=123
+      - POSTGRES_DB=patternSearchdb
+    volumes: 
+      - ./init_db.sh:/docker-entrypoint-initdb.d/init_db.sh
+    networks:
+    #   - app1-db
+      - default
+
+# networks:
+#   app1-db:
+# #   # app2-db:
+# #   app1-app2:
+# #   # app3-app2:
+#   app3-app1:
+networks:
+  default:
+    driver: bridge
+    # external: true

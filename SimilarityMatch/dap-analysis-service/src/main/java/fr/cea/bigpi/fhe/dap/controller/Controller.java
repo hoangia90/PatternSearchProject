@@ -65,6 +65,19 @@ public interface Controller {
 			@ApiResponse(code = 401, message = "Unauthorized", response = String.class),
 			@ApiResponse(code = 404, message = "Not found", response = String.class),
 			@ApiResponse(code = 500, message = "Error for HTTPS call trustAnchors", response = String.class) })
+	@PostMapping("/crud-data-master/check/02-checkWithEncryptedFilePath")
+	public @ResponseBody ResponseEntity<byte[]> checkWithEncryptedFilePath(
+			@ApiParam(name = "partnerID", value = "", example = "", required = true) @RequestParam("partnerID") String partnerID,
+			@ApiParam(name = "requestID", value = "", example = "", required = true) @RequestParam("requestID") String requestID,
+			@ApiParam(name = "dataPath", value = "", example = "", required = true) @RequestParam("dataPath") String dataPath);
+
+	@ApiOperation(value = "Check If An Uploaded Encrypted File's Information Is In Database", notes = "This method checks if an uploaded encrypted file's information exists in database and returns an encrypted .ct file result. The file result is decrypted with 04-decryptCheckedResult. Note that: the requestID number is used in this method generated from the 01-uploadFile", nickname = "checkWithEncryptedFile", response = ResponseEntity.class, authorizations = {}, tags = {
+			"Data For Client", })
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Server response", response = String.class),
+			@ApiResponse(code = 400, message = "Bad request", response = String.class),
+			@ApiResponse(code = 401, message = "Unauthorized", response = String.class),
+			@ApiResponse(code = 404, message = "Not found", response = String.class),
+			@ApiResponse(code = 500, message = "Error for HTTPS call trustAnchors", response = String.class) })
 	@PostMapping("/crud-data-master/check/02-checkWithEncryptedFile")
 	public @ResponseBody ResponseEntity<byte[]> checkWithEncryptedFile(
 			@ApiParam(name = "partnerID", value = "", example = "", required = true) @RequestParam("partnerID") String partnerID,
